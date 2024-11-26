@@ -6,11 +6,21 @@
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
              x:Class="AvaloniaSampleApplication1.Views.MainView"
              x:DataType="vm:MainViewModel">
+
+	<UserControl.Styles>
+		<Style Selector="Label">
+			<Setter Property="FontSize" Value="40"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontWeight" Value="Bold"/>
+		</Style>
+	</UserControl.Styles>
+	
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
+	
 
 	<!-- Title area-->
 	<Grid RowDefinitions="Auto, *, Auto">
@@ -18,15 +28,22 @@
 			<Rectangle Grid.Column="0" Fill="Red" Width="40"></Rectangle>
 			<Rectangle Grid.Column="1" Fill="Blue" Width="40"></Rectangle>
 			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2">
-				<Label FontWeight="Black">AVALONIA</Label>
-				<Label>LOUDNESS METER</Label>
+				<Label FontSize="24" FontWeight="Black">AVALONIA</Label>
+				<Label FontSize="24" >LOUDNESS METER</Label>
 			</StackPanel>
 			<Rectangle Grid.Column="4" Fill="Yellow" Width="40"></Rectangle>
 		</Grid>
 
 		<!-- Main area-->
 		<Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *" Background="Gray">
-			<Rectangle Grid.Column="0" Fill="Purple" Width="120"></Rectangle>
+			<Grid Grid.Column="0" Width="150" RowDefinitions="*, Auto, Auto">
+				<Grid Grid.Row="0"></Grid>
+				<Label Grid.Row="1" Foreground="White" FontSize="20" HorizontalAlignment="Center" Margin="0,5">LUFS</Label>
+				<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+					<Button>A</Button>
+					<Button>B</Button>
+				</StackPanel>
+			</Grid>
 			<Rectangle Grid.Column="1" Fill="#ccc" Width="140"></Rectangle>
 			<Rectangle Grid.Column="2" Fill="Black"></Rectangle>
 		</Grid>
