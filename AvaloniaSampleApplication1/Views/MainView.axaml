@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaSampleApplication1.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AvaloniaSampleApplication1.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+	<StackPanel>
+		<Grid Grid.Row="0" Background="Orange" Height="40" ColumnDefinitions="Auto, Auto, *, Auto, Auto">
+			<Rectangle Grid.Column="0" Fill="Red" Width="40"></Rectangle>
+			<Rectangle Grid.Column="1" Fill="Blue" Width="40"></Rectangle>
+			<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2">
+				<Label FontWeight="Black">AVALONIA</Label>
+				<Label>LOUDNESS METER</Label>
+			</StackPanel>
+			<Rectangle Grid.Column="3" Fill="Green" Width="40"></Rectangle>
+			<Rectangle Grid.Column="4" Fill="Yellow" Width="40"></Rectangle>
+		</Grid>
+	</StackPanel>
+</UserControl>
