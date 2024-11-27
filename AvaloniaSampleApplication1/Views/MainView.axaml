@@ -140,7 +140,7 @@
 						</Style>
 					</StackPanel.Styles>
 					
-					<Button CornerRadius="30" Width="30" Height="30" Padding="3" Margin="0,0,20,0">
+					<Button CornerRadius="30" Width="30" Height="30" Padding="1" Margin="0,0,20,0">
 						<Image Margin="5,0,2,0" Source="{SvgImage /Assets/images/arrow-forward-double-svgrepo-com.svg}"/>
 					</Button>
 					<Button>INT-LRA</Button>
