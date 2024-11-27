@@ -3,6 +3,8 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="AvaloniaSampleApplication1/App.axaml" value="AvaloniaSampleApplication1.Desktop/AvaloniaSampleApplication1.Desktop.csproj" />
+        <entry key="AvaloniaSampleApplication1/LargeLabelControl.axaml" value="AvaloniaSampleApplication1.Desktop/AvaloniaSampleApplication1.Desktop.csproj" />
         <entry key="AvaloniaSampleApplication1/Views/MainView.axaml" value="AvaloniaSampleApplication1.Desktop/AvaloniaSampleApplication1.Desktop.csproj" />
         <entry key="AvaloniaSampleApplication1/Views/MainWindow.axaml" value="AvaloniaSampleApplication1.Desktop/AvaloniaSampleApplication1.Desktop.csproj" />
       </map>

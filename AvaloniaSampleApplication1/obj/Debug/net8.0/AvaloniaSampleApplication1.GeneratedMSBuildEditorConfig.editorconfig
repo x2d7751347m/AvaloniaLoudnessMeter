@@ -24,6 +24,9 @@ build_property.EnableCodeStyleSeverity =
 [C:/Users/x2d77/OneDrive/Desktop/projects/AvaloniaSampleApplication1/AvaloniaSampleApplication1/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/x2d77/OneDrive/Desktop/projects/AvaloniaSampleApplication1/AvaloniaSampleApplication1/LargeLabelControl.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/x2d77/OneDrive/Desktop/projects/AvaloniaSampleApplication1/AvaloniaSampleApplication1/Views/MainView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
