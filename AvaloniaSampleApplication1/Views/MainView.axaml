@@ -17,7 +17,7 @@
 		<!-- Title bar -->
 		<Grid Grid.Row="0" Background="#e5e5e5" Height="60" ColumnDefinitions="Auto, Auto, *, Auto, Auto">
 			<Button Width="50">
-				
+				<Image Source="{SvgImage /Assets/images/monitor-svgrepo-com.svg}"/>
 			</Button>
 			<Rectangle Grid.Column="1" Fill="Blue" Width="50"></Rectangle>
 			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2">

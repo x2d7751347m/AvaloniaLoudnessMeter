@@ -72,3 +72,10 @@ C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSamp
 C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\obj\Debug\net8.0\AvaloniaSampleApplication1.Desktop.pdb
 C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\obj\Debug\net8.0\AvaloniaSampleApplication1.Desktop.genruntimeconfig.cache
 C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\obj\Debug\net8.0\ref\AvaloniaSampleApplication1.Desktop.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\Avalonia.Svg.Skia.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\ExCSS.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\ShimSkiaSharp.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\SkiaSharp.HarfBuzz.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\Svg.Custom.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\Svg.Model.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1.Desktop\bin\Debug\net8.0\Svg.Skia.dll
