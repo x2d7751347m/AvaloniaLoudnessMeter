@@ -1,0 +1,15 @@
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\bin\Debug\net8.0\AvaloniaSampleApplication1.deps.json
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\bin\Debug\net8.0\AvaloniaSampleApplication1.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\bin\Debug\net8.0\AvaloniaSampleApplication1.pdb
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\AvaloniaSampleApplication1.csproj.AssemblyReference.cache
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\Avalonia\Resources.Inputs.cache
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\Avalonia\resources
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\AvaloniaSampleApplication1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\AvaloniaSampleApplication1.AssemblyInfoInputs.cache
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\AvaloniaSampleApplication1.AssemblyInfo.cs
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\AvaloniaSampleApplication1.csproj.CoreCompileInputs.cache
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\AvaloniaSampleApplication1.sourcelink.json
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\Avalonia\AvaloniaSampleApplication1.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\Avalonia\AvaloniaSampleApplication1.pdb
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\refint\Avalonia\AvaloniaSampleApplication1.dll
+C:\Users\x2d77\OneDrive\Desktop\projects\AvaloniaSampleApplication1\AvaloniaSampleApplication1\obj\Debug\net8.0\ref\AvaloniaSampleApplication1.dll

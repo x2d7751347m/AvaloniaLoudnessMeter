@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="AvaloniaSampleApplication1/Views/MainView.axaml" value="AvaloniaSampleApplication1.Desktop/AvaloniaSampleApplication1.Desktop.csproj" />
+        <entry key="AvaloniaSampleApplication1/Views/MainWindow.axaml" value="AvaloniaSampleApplication1.Desktop/AvaloniaSampleApplication1.Desktop.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
