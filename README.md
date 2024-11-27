@@ -1,1 +1,0 @@
-# AvaloniaSampleApplication1
