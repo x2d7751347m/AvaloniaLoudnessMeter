@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:AvaloniaLoudnessMeter.ViewModels"
              xmlns:controls="clr-namespace:AvaloniaLoudnessMeter"
              xmlns:styles="clr-namespace:AvaloniaLoudnessMeter.Styles"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
              x:Class="AvaloniaLoudnessMeter.Views.MainView"
              x:DataType="vm:MainViewModel">
   <Design.DataContext>
@@ -161,7 +161,6 @@
 					<Button Classes="small" Margin="0,0,20,0">AUTO</Button>
 					<Button Classes="small" FontSize="20" FontFamily="Arial" Background="{DynamicResource FadedRedBrush}">X</Button>
 				</StackPanel>
-				
 			</StackPanel>
 			
 			<!-- Graph -->
