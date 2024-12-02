@@ -8,11 +8,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
              x:Class="AvaloniaLoudnessMeter.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+	  <Design.DataContext>
+	    <!-- This only sets the DataContext for the previewer in an IDE,
+	         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+	    <vm:MainViewModel />
+	  </Design.DataContext>
 	
 	<UserControl.Styles>
 		<Style Selector="Button.small">
@@ -28,7 +28,18 @@
 		</Style>
 	</UserControl.Styles>
 	
-	<Grid RowDefinitions="Auto, *, Auto">
+	<Grid Name="MainGrid" RowDefinitions="Auto, *, Auto">
+		
+		<!-- Channel Configuration Popup -->
+		<Border 
+			Name="ChannelConfigurationPopup"
+			Grid.RowSpan="3" Background="Red" ZIndex="1" Opacity="0.5"
+			HorizontalAlignment="Left"
+	        VerticalAlignment="Bottom"
+	        Margin="15,0,0,15">
+			<Label>Test</Label>
+		</Border>
+		
 		<!-- Title bar -->
 		<Grid Grid.Row="0" Background="{DynamicResource MediumGreyBrush}" Height="60" ColumnDefinitions="Auto, Auto, *, Auto, Auto">
 			
@@ -63,8 +74,8 @@
 				<Image Source="{SvgImage /Assets/images/lock-svgrepo-com.svg}"/>
 			</Button>
 			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2">
-				<Label FontSize="24" FontWeight="Black">AVALONIA</Label>
-				<Label FontSize="24">LOUDNESS METER</Label>
+				<Label Content="{Binding BoldTitle}" FontSize="24" FontWeight="Black"></Label>
+				<Label Content="{Binding RegularTitle}" FontSize="24"></Label>
 			</StackPanel>
 			<Button Grid.Column="3">
 				<Image Source="{SvgImage /Assets/images/export-svgrepo-com.svg}"/>
@@ -169,7 +180,7 @@
 
 		<!-- Bottom area -->
 		<Grid Grid.Row="2" Margin="8" ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto, Auto">
-			<Button Grid.Column="0" Margin="0,0,8,0">Stereo</Button>
+			<Button Grid.Column="0" Name="ChannelConfigurationButton" Command="{Binding ChannelConfigurationButtonPressed}" Margin="0,0,8,0">Stereo</Button>
 			<Button Grid.Column="1">Youtube</Button>
 			<Button Grid.Column="3" Margin="0,0,8,0">10 SEC</Button>
 			<Button Grid.Column="4" Margin="0,0,8,0">CONTINUOUS</Button>
