@@ -26,6 +26,22 @@
 			<Setter Property="Background" Value="{DynamicResource BrightBlueHoverBrush}"/>
 			<Setter Property="TextBlock.Foreground" Value="White"/>
 		</Style>
+		
+		<Style Selector="Border.channel">
+			<Setter Property="Width" Value="0"></Setter>
+			<Setter Property="Height" Value="0"></Setter>
+			<Setter Property="Transitions">
+				<Transitions>
+					<DoubleTransition Property="Width" Duration="0:0:0.3"></DoubleTransition>
+					<DoubleTransition Property="Height" Duration="0:0:0.3"></DoubleTransition>
+				</Transitions>
+			</Setter>
+		</Style>
+		
+		<Style Selector="Border.channel.open">
+			<Setter Property="Width" Value="300"></Setter>
+			<Setter Property="Height" Value="800"></Setter>
+		</Style>
 	</UserControl.Styles>
 	
 	<Grid Name="MainGrid" RowDefinitions="Auto, *, Auto">
@@ -33,6 +49,8 @@
 		<!-- Channel Configuration Popup -->
 		<Border 
 			Name="ChannelConfigurationPopup"
+			Classes="channel"
+			Classes.open="{Binding ChannelConfigurationListIsOpen}"
 			Grid.RowSpan="3" Background="Red" ZIndex="1" Opacity="0.5"
 			HorizontalAlignment="Left"
 	        VerticalAlignment="Bottom"
@@ -168,7 +186,6 @@
 				<styles:LargeLabelControl LargeText="0.7dB" SmallText="TRUE PEAK MAX" Classes="button" Margin="0,0,0,10"></styles:LargeLabelControl>
 				
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-					
 					<Button Classes="small" Margin="0,0,20,0">AUTO</Button>
 					<Button Classes="small" FontSize="20" FontFamily="Arial" Background="{DynamicResource FadedRedBrush}">X</Button>
 				</StackPanel>
