@@ -32,11 +32,6 @@
     
     <!-- Main grid -->
     <Grid Name="MainGrid" RowDefinitions="Auto, *, Auto">
-        
-        <!-- Channel Configuration Popup Closer -->
-        <Border Grid.RowSpan="3" 
-                IsVisible="{Binding ChannelConfigurationListIsOpen}"
-                PointerPressed="InputElement_OnPointerPressed" Background="Transparent" ZIndex="9" />
 
         <!-- Channel Configuration Popup -->
         <styles:AnimatedPopup
