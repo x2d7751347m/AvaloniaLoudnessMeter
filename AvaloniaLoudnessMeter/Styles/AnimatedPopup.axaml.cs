@@ -339,7 +339,6 @@ public class AnimatedPopup : ContentControl
     {
         try
         {
-
             // If we have not yet found the desired size...
             if (!mSizeFound)
             {
