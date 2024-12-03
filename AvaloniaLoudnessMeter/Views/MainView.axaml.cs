@@ -28,7 +28,8 @@ public partial class MainView : UserControl
         base.Render(context);
         var position = mChannelConfigButton.TranslatePoint(new Point(), mMainGrid) ??
                        throw new Exception("Cannot get TranslatedPoint from Configuration Button");
-
+        
+        // Set margin of popup so it appears bottom left of button
         try
         {
             mChannelConfigPopup.Margin = new Thickness(
@@ -49,7 +50,7 @@ public partial class MainView : UserControl
         ((MainViewModel)DataContext).ChannelConfigurationButtonPressed();
     }
 
-    #region Private Members
+    #region Public Members
 
     private readonly Control mChannelConfigPopup;
     private readonly Control mChannelConfigButton;
