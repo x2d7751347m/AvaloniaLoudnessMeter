@@ -92,6 +92,11 @@ public class AnimatedPopup : ContentControl
         get => _open;
         set
         {
+            // If the value has not changed...
+            if (value == _open)
+                // Do nothing
+                return;
+            
             // If we are opening...
             if (value)
             {
@@ -106,9 +111,19 @@ public class AnimatedPopup : ContentControl
                         mUnderlayControl.SetValue(Grid.ColumnSpanProperty, grid.ColumnDefinitions.Count);
                 
                     // Insert the underlay control
-                    grid.Children.Insert(0, mUnderlayControl);
+                    if (!grid.Children.Contains(mUnderlayControl))
+                        grid.Children.Insert(0, mUnderlayControl);
                 }
             }
+            // If closing...
+            else
+            {
+                // If the control is currently fully open...
+                if (IsOpened)
+                    // Update desired size...
+                    UpdateDesiredSize();
+            }
+            
             SetAndRaise(OpenProperty, ref _open, value);
         }
     }
@@ -124,6 +139,21 @@ public class AnimatedPopup : ContentControl
     {
         get => _animationTime;
         set => SetAndRaise(AnimationTimeProperty, ref _animationTime, value);
+    }
+
+    #endregion
+
+    #region Animate Opacity
+    
+    private bool _animateOpacity = true;
+
+    public static readonly DirectProperty<AnimatedPopup, bool> AnimateOpacityProperty = AvaloniaProperty.RegisterDirect<AnimatedPopup, bool>(
+        nameof(AnimateOpacity), o => o.AnimateOpacity, (o, v) => o.AnimateOpacity = v);
+
+    public bool AnimateOpacity
+    {
+        get => _animateOpacity;
+        set => SetAndRaise(AnimateOpacityProperty, ref _animateOpacity, value);
     }
 
     #endregion
@@ -172,6 +202,19 @@ public class AnimatedPopup : ContentControl
     /// </summary>
     public AnimatedPopup()
     {
+        // If we have not yet captured the opacity
+        if (!mOpacityCaptured && !mSizeFound)
+        {
+            // Set flag to true
+            mOpacityCaptured = true;
+                
+            // Remember original controls opacity
+            mOriginalOpacity = Opacity;
+                
+            // Hide control
+            Opacity = 0;
+        }
+        
         // Make a new underlay control
         mUnderlayControl = new Border
         {
@@ -205,8 +248,7 @@ public class AnimatedPopup : ContentControl
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                // Set the desired size
-                mDesiredSize = DesiredSize - Margin;
+                UpdateDesiredSize();
                 
                 // Update animation
                 UpdateAnimation();
@@ -221,6 +263,11 @@ public class AnimatedPopup : ContentControl
 
     #region Private Methods
 
+    /// <summary>
+    /// Updates the animation desired size based on the current visuals desired size
+    /// </summary>
+    private void UpdateDesiredSize() => mDesiredSize = DesiredSize - Margin;
+    
     /// <summary>
     /// Calculate and start any new required animations
     /// </summary>
@@ -243,8 +290,11 @@ public class AnimatedPopup : ContentControl
         if (_open)
         {
             // Set size to desired size
-            Width = mDesiredSize.Width;
-            Height = mDesiredSize.Height;
+            Width = double.NaN;
+            Height = double.NaN;
+            
+            // Make sure opacity is set to original value
+            Opacity = mOriginalOpacity;
         }
         // If closed...
         else
@@ -327,6 +377,10 @@ public class AnimatedPopup : ContentControl
         Width = finalWidth;
         Height = finalHeight;
         
+        // Animate opacity
+        if (AnimateOpacity)
+            Opacity = mOriginalOpacity * easing.Ease(percentageAnimated);
+        
         // Animate underlay
         mUnderlayControl.Opacity = _underlayOpacity * easing.Ease(percentageAnimated);
         
@@ -337,32 +391,12 @@ public class AnimatedPopup : ContentControl
 
     public override void Render(DrawingContext context)
     {
-        try
+        // If we have not yet found the desired size...
+        if (!mSizeFound)
         {
-            // If we have not yet found the desired size...
-            if (!mSizeFound)
-            {
-                // If we have not yet captured the opacity
-                if (!mOpacityCaptured)
-                {
-                    // Set flag to true
-                    mOpacityCaptured = true;
-                
-                    // Remember original controls opacity
-                    mOriginalOpacity = Opacity;
-                
-                    // Hide control
-                    Opacity = 0;
-                }
-            
-                mSizingTimer.Change(100, int.MaxValue);
-            }
+            mSizingTimer.Change(100, int.MaxValue);
+        }
 
-            base.Render(context);
-        }
-        catch (Exception e)
-        {
-            // ignored
-        }
+        base.Render(context);
     }
 }

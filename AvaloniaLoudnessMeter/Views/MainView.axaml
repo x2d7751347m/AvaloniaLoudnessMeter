@@ -40,18 +40,19 @@
             Grid.Row="0" Grid.RowSpan="3"
             >
             <Border Padding="20" Background="White" BorderThickness="1" BorderBrush="#ddd" CornerRadius="5">
-            <StackPanel>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-                <Label Content="Hello world"></Label>
-            </StackPanel>
+                <Expander>
+                    
+                    <Expander.Header>
+                        <Label Content="This is a long header text"></Label>
+                    </Expander.Header>
+                    
+                    <StackPanel>
+                        <Label Content="Hello world"></Label>
+                        <Label Content="Hello world"></Label>
+                        <Label Content="Hello world"></Label>
+                        <Label Content="Hello world"></Label>
+                    </StackPanel>
+                </Expander>
             </Border>
         </styles:AnimatedPopup>
 
@@ -83,7 +84,7 @@
                 </Style>
             </Grid.Styles>
 
-            <Button Command="{Binding #ChannelConfigurationPopup.BeginClose}">
+            <Button>
                 <Image Source="{SvgImage /Assets/images/monitor-svgrepo-com.svg}" />
             </Button>
             <Button Grid.Column="1">
@@ -195,13 +196,27 @@
             </StackPanel>
 
             <!-- Graph -->
-            <Rectangle Grid.Column="2" Fill="Black" />
+            <Border Grid.Column="2">
+                <Expander VerticalAlignment="Top" HorizontalAlignment="Left">
+                    
+                    <Expander.Header>
+                        <Label Content="This is a long header text"></Label>
+                    </Expander.Header>
+                    
+                    <StackPanel>
+                        <Label Content="Hello world"></Label>
+                        <Label Content="Hello world"></Label>
+                        <Label Content="Hello world"></Label>
+                        <Label Content="Hello world"></Label>
+                    </StackPanel>
+                </Expander>
+            </Border>
         </Grid>
 
         <!-- Bottom bar -->
         <Grid Grid.Row="2" Margin="8" ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto, Auto">
             <Button Grid.Column="0" Name="ChannelConfigurationButton"
-                    Command="{Binding #ChannelConfigurationPopup.BeginOpen}" Margin="0,0,8,0">
+                    Command="{Binding #ChannelConfigurationPopup.BeginOpen}" Margin="0,0,0,0">
                 Stereo
             </Button>
             <Button Grid.Column="1" Content="YouTube">

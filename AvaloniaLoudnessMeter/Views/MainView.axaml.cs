@@ -40,8 +40,7 @@ public partial class MainView : UserControl
         }
         catch (Exception e)
         {
-            // Console.WriteLine(e);
-            // throw;
+            // ignored
         }
     }
 
