@@ -1,12 +1,13 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using AvaloniaLoudnessMeter.Services;
 using AvaloniaLoudnessMeter.ViewModels;
 using AvaloniaLoudnessMeter.Views;
 
 namespace AvaloniaLoudnessMeter;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {
@@ -15,20 +16,20 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // Initialize the dependencies
+        var audioInterface = new DummyAudioInterfaceService();
+        var mainViewModel = new MainViewModel(audioInterface);
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = mainViewModel
             };
-        }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = new MainViewModel()
+                DataContext = mainViewModel
             };
-        }
 
         base.OnFrameworkInitializationCompleted();
     }

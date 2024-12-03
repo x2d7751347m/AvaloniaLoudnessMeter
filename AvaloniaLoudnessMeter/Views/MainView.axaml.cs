@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using AvaloniaLoudnessMeter.ViewModels;
 
@@ -9,6 +10,8 @@ namespace AvaloniaLoudnessMeter.Views;
 
 public partial class MainView : UserControl
 {
+    #region Constructor
+
     public MainView()
     {
         InitializeComponent();
@@ -21,6 +24,15 @@ public partial class MainView : UserControl
             throw new Exception("Could not find control 'mChannelConfigPopup'");
         mMainGrid =
             this.FindControl<Control>("MainGrid") ?? throw new Exception("Could not find control 'mMainGrid'");
+    }
+
+    #endregion
+
+    protected override async void OnLoaded(RoutedEventArgs routedEventArgs)
+    {
+        await ((MainViewModel)DataContext).LoadSettingsAsync();
+        
+        base.OnLoaded(routedEventArgs);
     }
 
     public override void Render(DrawingContext context)
