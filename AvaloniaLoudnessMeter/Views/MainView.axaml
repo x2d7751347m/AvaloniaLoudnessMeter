@@ -195,15 +195,15 @@
                     </Button>
                 </StackPanel>
             </StackPanel>
-
-            <!-- Graph -->
+            
             <Border Grid.Column="2">
+            
                 <Expander VerticalAlignment="Top" HorizontalAlignment="Left">
-
+            
                     <Expander.Header>
                         <Label Content="This is a long header text" />
                     </Expander.Header>
-
+            
                     <StackPanel>
                         <Label Content="Hello world" />
                         <Label Content="Hello world" />

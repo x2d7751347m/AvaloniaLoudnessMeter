@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
 using AvaloniaLoudnessMeter.DataModels;
@@ -22,14 +23,24 @@ public class MainViewModel : ViewModelBase
     public bool ChannelConfigurationListIsOpen
     {
         get => _channelConfigurationListIsOpen;
-        set => this.RaiseAndSetIfChanged(ref _channelConfigurationListIsOpen, value);
+        set { this.RaiseAndSetIfChanged(ref _channelConfigurationListIsOpen, value); }
     }
 
     public string BoldTitle { get; set; } = "AVALONIA";
 
     public string RegularTitle { get; set; } = "LOUDNESS METER";
 
-    public ObservableCollection<ChannelConfigurationItem> ChannelConfigurations { get; set; }
+
+    private ObservableCollection<ChannelConfigurationItem> _channelConfigurations;
+    public ObservableCollection<ChannelConfigurationItem> ChannelConfigurations
+    {
+        get => _channelConfigurations;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _channelConfigurations, value);
+            // OnPropertyChanged();
+        }
+    }
 
     private ChannelConfigurationItem? _selectedChannelConfiguration;
 
