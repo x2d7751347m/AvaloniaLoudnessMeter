@@ -123,7 +123,11 @@ public class AnimatedPopup : ContentControl
                     // Update desired size...
                     UpdateDesiredSize();
             }
+        
+            // Update animation
+            UpdateAnimation();
             
+            // Raise the property changed event
             SetAndRaise(OpenProperty, ref _open, value);
         }
     }
@@ -180,17 +184,11 @@ public class AnimatedPopup : ContentControl
     public void BeginOpen()
     {
         Open = true;
-        
-        // Update animation
-        UpdateAnimation();
     }
 
     public void BeginClose()
     {
         Open = false;
-        
-        // Update animation
-        UpdateAnimation();
     }
 
     #endregion
