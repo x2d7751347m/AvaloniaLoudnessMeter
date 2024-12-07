@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -11,12 +12,34 @@ namespace AvaloniaLoudnessMeter.Views;
 
 public partial class MainView : UserControl
 {
+    #region Private Members
+    
+    private readonly Control mChannelConfigPopup;
+    private readonly Control mChannelConfigButton;
+    private readonly Control mMainGrid;
+    private Control mVolumeContainer;
+    
+    /// <summary>
+    /// The timeout timer to detect when auto-sizing has finished firing
+    /// </summary>
+    private Timer mSizingTimer;
+    
+    #endregion
+    
     #region Constructor
 
     public MainView()
     {
         InitializeComponent();
-
+        
+        mSizingTimer = new Timer((t) => 
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                UpdateSizes();
+            });
+        });
+        
         mChannelConfigButton =
             this.FindControl<Control>("ChannelConfigurationButton") ??
             throw new Exception("Could not find control 'mChannelConfigButton'");
@@ -25,9 +48,16 @@ public partial class MainView : UserControl
             throw new Exception("Could not find control 'mChannelConfigPopup'");
         mMainGrid =
             this.FindControl<Control>("MainGrid") ?? throw new Exception("Could not find control 'mMainGrid'");
+        mVolumeContainer =
+            this.FindControl<Control>("VolumeContainer") ?? throw new Exception("Could not find control 'mVolumeContainer'");
     }
 
     #endregion
+
+    private void UpdateSizes()
+    {
+        ((MainViewModel)DataContext).VolumeContainerSize = mVolumeContainer.Bounds.Height;
+    }
 
     protected override async void OnLoaded(RoutedEventArgs routedEventArgs)
     {
@@ -39,6 +69,8 @@ public partial class MainView : UserControl
     public override void Render(DrawingContext context)
     {
         base.Render(context);
+
+        mSizingTimer.Change(100, int.MaxValue);
 
         Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -59,12 +91,4 @@ public partial class MainView : UserControl
     {
         ((MainViewModel)DataContext).ChannelConfigurationButtonPressed();
     }
-
-    #region Public Members
-
-    private readonly Control mChannelConfigPopup;
-    private readonly Control mChannelConfigButton;
-    private readonly Control mMainGrid;
-
-    #endregion
 }
