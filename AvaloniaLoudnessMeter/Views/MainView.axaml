@@ -96,7 +96,6 @@
                         Grid.Column="2">
                 <Label Content="{Binding BoldTitle}" FontSize="24" FontWeight="Black" />
                 <Label Content="{Binding RegularTitle}" FontSize="24" />
-                <Label Content="{Binding ChannelConfigurationListIsOpen}" FontSize="24" />
             </StackPanel>
             <Button Grid.Column="3">
                 <Image Source="{SvgImage /Assets/images/export-svgrepo-com.svg}" />
