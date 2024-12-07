@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Threading.Tasks;
 using AvaloniaLoudnessMeter.DataModels;
 using AvaloniaLoudnessMeter.Services;
@@ -29,13 +29,7 @@ public class MainViewModel : ViewModelBase
 
     public string RegularTitle { get; set; } = "LOUDNESS METER";
 
-    private IEnumerable<IGrouping<string, ChannelConfigurationItem>> _channelConfigurations = default!;
-
-    public IEnumerable<IGrouping<string, ChannelConfigurationItem>> ChannelConfigurations
-    {
-        get => _channelConfigurations;
-        set => this.RaiseAndSetIfChanged(ref _channelConfigurations, value);
-    }
+    public ObservableCollection<ChannelConfigurationItem> ChannelConfigurations { get; set; }
 
     private ChannelConfigurationItem? _selectedChannelConfiguration;
 
@@ -51,12 +45,14 @@ public class MainViewModel : ViewModelBase
 
     #region Public Commands
 
+    public ReactiveCommand<ChannelConfigurationItem, Unit> ChannelConfigurationItemPressedCommand { get; }
+
     public void ChannelConfigurationButtonPressed()
     {
         ChannelConfigurationListIsOpen ^= true;
     }
 
-    public void ChannelConfigurationItemPressed(ChannelConfigurationItem item)
+    public void ChannelConfigurationItemPressed(ChannelConfigurationItem item = null)
     {
         // Update the selected item
         SelectedChannelConfiguration = item;
@@ -69,8 +65,7 @@ public class MainViewModel : ViewModelBase
     {
         var channelConfigurations = await mAudioInterfaceService.GetChannelConfigurationsAsync();
 
-        ChannelConfigurations = channelConfigurations
-            .GroupBy(item => item.Group);
+        ChannelConfigurations = new ObservableCollection<ChannelConfigurationItem>(channelConfigurations);
     }
 
     #endregion
@@ -84,6 +79,9 @@ public class MainViewModel : ViewModelBase
     public MainViewModel(IAudioInterfaceService audioInterfaceService)
     {
         mAudioInterfaceService = audioInterfaceService;
+
+        ChannelConfigurationItemPressedCommand =
+            ReactiveCommand.Create<ChannelConfigurationItem>(ChannelConfigurationItemPressed);
     }
 
     /// <summary>
@@ -92,6 +90,9 @@ public class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         mAudioInterfaceService = new DummyAudioInterfaceService();
+
+        ChannelConfigurationItemPressedCommand =
+            ReactiveCommand.Create<ChannelConfigurationItem>(ChannelConfigurationItemPressed);
     }
 
     #endregion

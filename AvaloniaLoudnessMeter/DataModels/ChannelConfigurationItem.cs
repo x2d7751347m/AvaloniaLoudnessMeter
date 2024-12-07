@@ -1,6 +1,18 @@
 ﻿namespace AvaloniaLoudnessMeter.DataModels;
 
 /// <summary>
-/// Information about a channel configuration
+///     Information about a channel configuration
 /// </summary>
-public record ChannelConfigurationItem(string Group, string Text, string ShortText);
+public class ChannelConfigurationItem
+{
+    public ChannelConfigurationItem(string group, string text, string shortText)
+    {
+        Group = group;
+        Text = text;
+        ShortText = shortText;
+    }
+
+    public string Group { get; set; }
+    public string Text { get; set; }
+    public string ShortText { get; set; }
+}
