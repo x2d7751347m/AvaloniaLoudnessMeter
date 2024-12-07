@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using AvaloniaLoudnessMeter.ViewModels;
 
 namespace AvaloniaLoudnessMeter.Views;
@@ -38,22 +39,20 @@ public partial class MainView : UserControl
     public override void Render(DrawingContext context)
     {
         base.Render(context);
-        var position = mChannelConfigButton.TranslatePoint(new Point(), mMainGrid) ??
-                       throw new Exception("Cannot get TranslatedPoint from Configuration Button");
-        
-        // Set margin of popup so it appears bottom left of button
-        try
+
+        Dispatcher.UIThread.InvokeAsync(() =>
         {
+            var position = mChannelConfigButton.TranslatePoint(new Point(), mMainGrid) ??
+                           throw new Exception("Cannot get TranslatedPoint from Configuration Button");
+        
+            // Set margin of popup so it appears bottom left of button
             mChannelConfigPopup.Margin = new Thickness(
                 position.X,
                 0,
                 0,
                 mMainGrid.Bounds.Height - position.Y - mChannelConfigButton.Bounds.Height);
-        }
-        catch (Exception e)
-        {
-            // ignored
-        }
+        });
+        
     }
 
     private void InputElement_OnPointerPressed(object sender, PointerPressedEventArgs e)

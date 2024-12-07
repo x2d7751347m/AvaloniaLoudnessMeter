@@ -36,7 +36,8 @@
         <styles:AnimatedPopup
             Name="ChannelConfigurationPopup"
             animationTime="0.3"
-            Grid.Row="0" Grid.RowSpan="3">
+            Grid.Row="0" Grid.RowSpan="3"
+            Open="{Binding ChannelConfigurationListIsOpen, Mode=TwoWay}">
             <Border Padding="20" Background="White" BorderThickness="1" BorderBrush="#ddd" CornerRadius="5">
 
                 <ItemsControl ItemsSource="{Binding ChannelConfigurations}">
@@ -95,6 +96,7 @@
                         Grid.Column="2">
                 <Label Content="{Binding BoldTitle}" FontSize="24" FontWeight="Black" />
                 <Label Content="{Binding RegularTitle}" FontSize="24" />
+                <Label Content="{Binding ChannelConfigurationListIsOpen}" FontSize="24" />
             </StackPanel>
             <Button Grid.Column="3">
                 <Image Source="{SvgImage /Assets/images/export-svgrepo-com.svg}" />

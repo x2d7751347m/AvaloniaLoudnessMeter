@@ -38,7 +38,6 @@ public class MainViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _channelConfigurations, value);
-            // OnPropertyChanged();
         }
     }
 
@@ -69,7 +68,7 @@ public class MainViewModel : ViewModelBase
         SelectedChannelConfiguration = item;
 
         // Close the menu
-        ChannelConfigurationListIsOpen = false;
+        ChannelConfigurationListIsOpen ^= true;
     }
 
     public async Task LoadSettingsAsync()
