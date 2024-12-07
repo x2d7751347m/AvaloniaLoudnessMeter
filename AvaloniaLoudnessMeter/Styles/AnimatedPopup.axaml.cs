@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading;
 using Avalonia;
-using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -12,80 +10,152 @@ namespace AvaloniaLoudnessMeter.Styles;
 
 public class AnimatedPopup : ContentControl
 {
+    #region Constructor
+
+    /// <summary>
+    ///     Default constructor
+    /// </summary>
+    public AnimatedPopup()
+    {
+        // If we have not yet captured the opacity
+        if (!mOpacityCaptured && !mSizeFound)
+        {
+            // Set flag to true
+            mOpacityCaptured = true;
+
+            // Remember original controls opacity
+            mOriginalOpacity = Opacity;
+
+            // Hide control
+            Opacity = 0;
+        }
+
+        // Make a new underlay control
+        mUnderlayControl = new Border
+        {
+            Background = Brushes.Black,
+            Opacity = 0,
+            ZIndex = 9
+        };
+
+        // On press, close popup
+        mUnderlayControl.PointerPressed += (sender, args) => { BeginClose(); };
+
+        // Make a new dispatch timer
+        mAnimationTimer = new DispatcherTimer
+        {
+            // Set the timer to run 60 times a second
+            Interval = mFramerate
+        };
+
+        mSizingTimer = new Timer(t =>
+        {
+            // If we have already calculated the size...
+            if (mSizeFound)
+                // No longer accept new sizes
+                return;
+
+            // We have now found our desired size
+            mSizeFound = true;
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                UpdateDesiredSize();
+
+                // Update animation
+                UpdateAnimation();
+            });
+        });
+
+        // Callback on every tick
+        mAnimationTimer.Tick += (s, e) => AnimationTick();
+    }
+
+    #endregion
+
+    public override void Render(DrawingContext context)
+    {
+        // If we have not yet found the desired size...
+        if (!mSizeFound) mSizingTimer.Change(100, int.MaxValue);
+
+        base.Render(context);
+    }
+
     #region Private Members
 
     /// <summary>
-    /// The underlay control for closing this popup
+    ///     The underlay control for closing this popup
     /// </summary>
-    private Control mUnderlayControl;
-    
+    private readonly Control mUnderlayControl;
+
     /// <summary>
-    /// Indicates if this is the first time we are animating
+    ///     Indicates if this is the first time we are animating
     /// </summary>
     private bool mFirstAnimation = true;
-    
+
     /// <summary>
-    /// Indicates if we have captured the opacity value yet
+    ///     Indicates if we have captured the opacity value yet
     /// </summary>
-    private bool mOpacityCaptured = false;
-    
+    private readonly bool mOpacityCaptured;
+
     /// <summary>
-    /// Store the controls original Opacity value at startup
+    ///     Store the controls original Opacity value at startup
     /// </summary>
-    private double mOriginalOpacity;
-    
+    private readonly double mOriginalOpacity;
+
     // Get a 60 FPS timespan
-    private TimeSpan mFramerate = TimeSpan.FromSeconds(1 / 60.0);
-    
+    private readonly TimeSpan mFramerate = TimeSpan.FromSeconds(1 / 60.0);
+
     // Calculate total ticks that make up the animation time
     private int mTotalTicks => (int)(_animationTime.TotalSeconds / mFramerate.TotalSeconds);
 
     /// <summary>
-    /// Store the controls desired size
+    ///     Store the controls desired size
     /// </summary>
     private Size mDesiredSize;
 
     /// <summary>
-    /// A flag for when we are animating
+    ///     A flag for when we are animating
     /// </summary>
     private bool mAnimating;
 
     /// <summary>
-    /// Keeps track of if we have found the desired 100% width/height auto size
+    ///     Keeps track of if we have found the desired 100% width/height auto size
     /// </summary>
     private bool mSizeFound;
 
     /// <summary>
-    /// The animation UI timer
+    ///     The animation UI timer
     /// </summary>
-    private DispatcherTimer mAnimationTimer;
+    private readonly DispatcherTimer mAnimationTimer;
 
     /// <summary>
-    /// The timeout timer to detect when auto-sizing has finished firing
+    ///     The timeout timer to detect when auto-sizing has finished firing
     /// </summary>
-    private Timer mSizingTimer;
+    private readonly Timer mSizingTimer;
 
     /// <summary>
-    /// The current position in the animation
+    ///     The current position in the animation
     /// </summary>
     private int mAnimationCurrentTick;
 
     #endregion
-    
+
     #region Public Properties
-    
+
     /// <summary>
-    /// Indicates if the control is currently opened
+    ///     Indicates if the control is currently opened
     /// </summary>
     public bool IsOpened => mAnimationCurrentTick >= mTotalTicks;
 
     private bool _open;
 
-    public static readonly DirectProperty<AnimatedPopup, bool> OpenProperty = AvaloniaProperty.RegisterDirect<AnimatedPopup, bool>(
-        nameof(Open), o => o.Open, (o, v) => o.Open = v);
+    public static readonly DirectProperty<AnimatedPopup, bool> OpenProperty =
+        AvaloniaProperty.RegisterDirect<AnimatedPopup, bool>(
+            nameof(Open), o => o.Open, (o, v) => o.Open = v);
 
     /// <summary>
-    /// Property to set whether the control should be open or closed
+    ///     Property to set whether the control should be open or closed
     /// </summary>
     public bool Open
     {
@@ -96,13 +166,12 @@ public class AnimatedPopup : ContentControl
             if (value == _open)
                 // Do nothing
                 return;
-            
+
             // If we are opening...
             if (value)
             {
                 // If the parent is a grid...
                 if (Parent is Grid grid)
-                {
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         // Set grid row/column span
@@ -116,7 +185,6 @@ public class AnimatedPopup : ContentControl
                         if (!grid.Children.Contains(mUnderlayControl))
                             grid.Children.Insert(0, mUnderlayControl);
                     });
-                }
             }
             // If closing...
             else
@@ -126,21 +194,22 @@ public class AnimatedPopup : ContentControl
                     // Update desired size...
                     UpdateDesiredSize();
             }
-        
+
             // Update animation
             UpdateAnimation();
-            
+
             // Raise the property changed event
             SetAndRaise(OpenProperty, ref _open, value);
         }
     }
-    
+
     #region Animation Time
-    
+
     private TimeSpan _animationTime = TimeSpan.FromSeconds(3);
 
-    public static readonly DirectProperty<AnimatedPopup, TimeSpan> AnimationTimeProperty = AvaloniaProperty.RegisterDirect<AnimatedPopup, TimeSpan>(
-        nameof(animationTime), o => o.animationTime, (o, v) => o.animationTime = v);
+    public static readonly DirectProperty<AnimatedPopup, TimeSpan> AnimationTimeProperty =
+        AvaloniaProperty.RegisterDirect<AnimatedPopup, TimeSpan>(
+            nameof(animationTime), o => o.animationTime, (o, v) => o.animationTime = v);
 
     public TimeSpan animationTime
     {
@@ -151,11 +220,12 @@ public class AnimatedPopup : ContentControl
     #endregion
 
     #region Animate Opacity
-    
+
     private bool _animateOpacity = true;
 
-    public static readonly DirectProperty<AnimatedPopup, bool> AnimateOpacityProperty = AvaloniaProperty.RegisterDirect<AnimatedPopup, bool>(
-        nameof(AnimateOpacity), o => o.AnimateOpacity, (o, v) => o.AnimateOpacity = v);
+    public static readonly DirectProperty<AnimatedPopup, bool> AnimateOpacityProperty =
+        AvaloniaProperty.RegisterDirect<AnimatedPopup, bool>(
+            nameof(AnimateOpacity), o => o.AnimateOpacity, (o, v) => o.AnimateOpacity = v);
 
     public bool AnimateOpacity
     {
@@ -169,8 +239,9 @@ public class AnimatedPopup : ContentControl
 
     private double _underlayOpacity = 0.2;
 
-    public static readonly DirectProperty<AnimatedPopup, double> UnderlayOpacityProperty = AvaloniaProperty.RegisterDirect<AnimatedPopup, double>(
-        nameof(UnderlayOpacity), o => o.UnderlayOpacity, (o, v) => o.UnderlayOpacity = v);
+    public static readonly DirectProperty<AnimatedPopup, double> UnderlayOpacityProperty =
+        AvaloniaProperty.RegisterDirect<AnimatedPopup, double>(
+            nameof(UnderlayOpacity), o => o.UnderlayOpacity, (o, v) => o.UnderlayOpacity = v);
 
     public double UnderlayOpacity
     {
@@ -179,7 +250,7 @@ public class AnimatedPopup : ContentControl
     }
 
     #endregion
-    
+
     #endregion
 
     #region Public Commands
@@ -196,94 +267,31 @@ public class AnimatedPopup : ContentControl
 
     #endregion
 
-    #region Constructor
-
-    /// <summary>
-    /// Default constructor
-    /// </summary>
-    public AnimatedPopup()
-    {
-        // If we have not yet captured the opacity
-        if (!mOpacityCaptured && !mSizeFound)
-        {
-            // Set flag to true
-            mOpacityCaptured = true;
-                
-            // Remember original controls opacity
-            mOriginalOpacity = Opacity;
-                
-            // Hide control
-            Opacity = 0;
-        }
-        
-        // Make a new underlay control
-        mUnderlayControl = new Border
-        {
-            Background = Brushes.Black,
-            Opacity = 0,
-            ZIndex = 9,
-        };
-
-        // On press, close popup
-        mUnderlayControl.PointerPressed += (sender, args) =>
-        {
-            BeginClose();
-        };
-        
-        // Make a new dispatch timer
-        mAnimationTimer = new DispatcherTimer()
-        {
-            // Set the timer to run 60 times a second
-            Interval = mFramerate
-        };
-
-        mSizingTimer = new Timer((t) => 
-        {
-            // If we have already calculated the size...
-            if (mSizeFound)
-                // No longer accept new sizes
-                return;
-            
-            // We have now found our desired size
-            mSizeFound = true;
-
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                UpdateDesiredSize();
-                
-                // Update animation
-                UpdateAnimation();
-            });
-        });
-        
-        // Callback on every tick
-        mAnimationTimer.Tick += (s, e) => AnimationTick();
-    }
-
-    #endregion
-
     #region Private Methods
 
     /// <summary>
-    /// Updates the animation desired size based on the current visuals desired size
+    ///     Updates the animation desired size based on the current visuals desired size
     /// </summary>
-    private void UpdateDesiredSize() => mDesiredSize = DesiredSize - Margin;
-    
+    private void UpdateDesiredSize()
+    {
+        mDesiredSize = DesiredSize - Margin;
+    }
+
     /// <summary>
-    /// Calculate and start any new required animations
+    ///     Calculate and start any new required animations
     /// </summary>
     private void UpdateAnimation()
     {
         // Do nothing if we still haven't found our initial size
         if (!mSizeFound)
             return;
-        
+
         // Start the animation thread again
         mAnimationTimer.Start();
     }
 
     /// <summary>
-    /// Should be called when an open or close transition has complete
+    ///     Should be called when an open or close transition has complete
     /// </summary>
     private void AnimationComplete()
     {
@@ -293,7 +301,7 @@ public class AnimatedPopup : ContentControl
             // Set size to desired size
             Width = double.NaN;
             Height = double.NaN;
-            
+
             // Make sure opacity is set to original value
             Opacity = mOriginalOpacity;
         }
@@ -303,10 +311,9 @@ public class AnimatedPopup : ContentControl
             // Set size to 0
             Width = 0;
             Height = 0;
-            
+
             // If the parent is a grid...
             if (Parent is Grid grid)
-            {
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     // Reset opacity
@@ -316,12 +323,11 @@ public class AnimatedPopup : ContentControl
                     if (grid.Children.Contains(mUnderlayControl))
                         grid.Children.Remove(mUnderlayControl);
                 });
-            }
         }
     }
 
     /// <summary>
-    /// Update controls sizes based on the next tick of an animation
+    ///     Update controls sizes based on the next tick of an animation
     /// </summary>
     private void AnimationTick()
     {
@@ -330,77 +336,66 @@ public class AnimatedPopup : ContentControl
         {
             // Clear the flag
             mFirstAnimation = false;
-            
+
             // Stop this animation timer
             mAnimationTimer.Stop();
-            
+
             // Reset opacity
             Opacity = mOriginalOpacity;
-            
+
             // Set the final size
             AnimationComplete();
-            
+
             // Do on this tick
             return;
         }
-        
+
         // If we have reached the end of our animation...
         if ((_open && mAnimationCurrentTick >= mTotalTicks) ||
             (!_open && mAnimationCurrentTick == 0))
         {
             // Stop this animation timer
             mAnimationTimer.Stop();
-            
+
             // Set the final size
             AnimationComplete();
-            
+
             // Clear animating flag
             mAnimating = false;
-            
+
             // Break out of code
             return;
         }
-        
+
         // Set animating flag
         mAnimating = true;
-        
+
         // Move the tick in the right direction
         mAnimationCurrentTick += _open ? 1 : -1;
-        
+
         // Get percentage of the way through the current animation
         var percentageAnimated = (float)mAnimationCurrentTick / mTotalTicks;
-        
+
         // Make an animating easing
         var easing = new QuadraticEaseIn();
-        
+
         // Calculate final width and height
         var finalWidth = mDesiredSize.Width * easing.Ease(percentageAnimated);
         var finalHeight = mDesiredSize.Height * easing.Ease(percentageAnimated);
-        
+
         // Do our animation
         Width = finalWidth;
         Height = finalHeight;
-        
+
         // Animate opacity
         if (AnimateOpacity)
             Opacity = mOriginalOpacity * easing.Ease(percentageAnimated);
-        
+
         // Animate underlay
         mUnderlayControl.Opacity = _underlayOpacity * easing.Ease(percentageAnimated);
-        
+
         Console.WriteLine($"Current tick: {mAnimationCurrentTick}");
     }
 
     #endregion
-
-    public override void Render(DrawingContext context)
-    {
-        // If we have not yet found the desired size...
-        if (!mSizeFound)
-        {
-            mSizingTimer.Change(100, int.MaxValue);
-        }
-
-        base.Render(context);
-    }
 }

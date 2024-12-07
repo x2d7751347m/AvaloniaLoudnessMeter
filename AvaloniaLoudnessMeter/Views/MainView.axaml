@@ -13,9 +13,9 @@
 	         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
-    
+
     <UserControl.Resources>
-        <valueConverters:CheckedToRotationConverter x:Key="CheckedToRotationConverter"></valueConverters:CheckedToRotationConverter>
+        <valueConverters:CheckedToRotationConverter x:Key="CheckedToRotationConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -61,51 +61,51 @@
                                             BorderThickness="{TemplateBinding BorderThickness}"
                                             CornerRadius="{TemplateBinding CornerRadius}">
                                         <StackPanel>
-                                            
-                                        <Grid RowDefinitions="*, Auto">
-                                            <ToggleButton Name="PART_toggle"
-                                                          Grid.Row="0"
-                                                          Padding="0"
-                                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                                          VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                                                          Content="{TemplateBinding Header}"
-                                                          IsChecked="{TemplateBinding IsExpanded,
-                                                        Mode=TwoWay}" 
-                                                          >
-                                                <ToggleButton.Template>
-                                                            <ControlTemplate>
-                                                                <Border Background="{TemplateBinding Background}"
-                                                                        BorderThickness="1">
-                                                                    <Grid ColumnDefinitions="*,Auto">
-                                                                        <ContentControl Grid.Column="0" Content="{TemplateBinding Content}"></ContentControl>
-                                                                        <Border Grid.Column="1"
+
+                                            <Grid RowDefinitions="*, Auto">
+                                                <ToggleButton Name="PART_toggle"
+                                                              Grid.Row="0"
+                                                              Padding="0"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                                              Content="{TemplateBinding Header}"
+                                                              IsChecked="{TemplateBinding IsExpanded,
+                                                        Mode=TwoWay}">
+                                                    <ToggleButton.Template>
+                                                        <ControlTemplate>
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                    BorderThickness="1">
+                                                                <Grid ColumnDefinitions="*,Auto">
+                                                                    <ContentControl Grid.Column="0"
+                                                                        Content="{TemplateBinding Content}" />
+                                                                    <Border Grid.Column="1"
                                                                             Padding="8"
                                                                             RenderTransform="{TemplateBinding IsChecked, Converter={StaticResource CheckedToRotationConverter}}"
                                                                             HorizontalAlignment="Center"
                                                                             VerticalAlignment="Center">
-                                                                            <Path HorizontalAlignment="Center"
-                                                                                VerticalAlignment="Center"
-                                                                                Data="M 6 0 L 0 6 L 6 12"
-                                                                                Stroke="#bbb"
-                                                                                StrokeThickness="2" />
-                                                                        </Border>
-                                                                        
-                                                                    </Grid>
-                                                                </Border>
-                                                            </ControlTemplate>
-                                                </ToggleButton.Template>
-                                            </ToggleButton>
-                                            <ContentPresenter Name="PART_ContentPresenter2"
-                                                              Grid.Row="1"
-                                                              Padding="{TemplateBinding Padding}"
-                                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                              Content="{TemplateBinding Content}"
-                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                              IsVisible="{TemplateBinding IsExpanded}" />
-                                        </Grid>
-                                            <Rectangle Fill="#999" Height="1" Margin="7,0"></Rectangle>
-                                            
+                                                                        <Path HorizontalAlignment="Center"
+                                                                              VerticalAlignment="Center"
+                                                                              Data="M 6 0 L 0 6 L 6 12"
+                                                                              Stroke="#bbb"
+                                                                              StrokeThickness="2" />
+                                                                    </Border>
+
+                                                                </Grid>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </ToggleButton.Template>
+                                                </ToggleButton>
+                                                <ContentPresenter Name="PART_ContentPresenter2"
+                                                                  Grid.Row="1"
+                                                                  Padding="{TemplateBinding Padding}"
+                                                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                                  Content="{TemplateBinding Content}"
+                                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                  IsVisible="{TemplateBinding IsExpanded}" />
+                                            </Grid>
+                                            <Rectangle Fill="#999" Height="1" Margin="7,0" />
+
                                         </StackPanel>
                                     </Border>
                                 </ControlTemplate>
@@ -119,8 +119,8 @@
                         <Setter Property="Theme" Value="{StaticResource SmallExpander}" />
                     </Style>
                 </Border.Styles>
-                
-                <ItemsControl 
+
+                <ItemsControl
                     ItemsSource="{Binding ChannelConfigurations}"
                     Margin="0,0,0,-2">
                     <ItemsControl.ItemTemplate>
@@ -240,8 +240,9 @@
                     <Label Grid.Column="2" Grid.Row="10" />
 
                     <!-- Arrow -->
-                    <Canvas Name="VolumeContainer" Grid.Row="0" Grid.Column="3" Grid.RowSpan="11" Width="20" Margin="6 0 0 0">
-                        <Path Canvas.Top="{Binding VolumePercentPosition}" Fill="White" Data="M 20 3 L 4 10 L 20 17 Z"></Path>
+                    <Canvas Name="VolumeContainer" Grid.Row="0" Grid.Column="3" Grid.RowSpan="11" Width="20"
+                            Margin="6 0 0 0">
+                        <Path Canvas.Top="{Binding VolumePercentPosition}" Fill="White" Data="M 20 3 L 4 10 L 20 17 Z" />
                     </Canvas>
 
                 </Grid>

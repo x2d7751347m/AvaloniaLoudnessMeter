@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using Avalonia.Threading;
 using AvaloniaLoudnessMeter.DataModels;
 using AvaloniaLoudnessMeter.Services;
@@ -34,11 +33,19 @@ public class MainViewModel : ViewModelBase
 
     private double _volumePercentPosition;
 
-    public double VolumePercentPosition { get => _volumePercentPosition; set => this.RaiseAndSetIfChanged(ref _volumePercentPosition, value); }
+    public double VolumePercentPosition
+    {
+        get => _volumePercentPosition;
+        set => this.RaiseAndSetIfChanged(ref _volumePercentPosition, value);
+    }
 
     private double _volumeContainerSize;
 
-    public double VolumeContainerSize { get => _volumeContainerSize; set => this.RaiseAndSetIfChanged(ref _volumeContainerSize, value); }
+    public double VolumeContainerSize
+    {
+        get => _volumeContainerSize;
+        set => this.RaiseAndSetIfChanged(ref _volumeContainerSize, value);
+    }
 
 
     private ObservableCollection<ChannelConfigurationItem> _channelConfigurations;
@@ -100,7 +107,7 @@ public class MainViewModel : ViewModelBase
 
         ChannelConfigurationItemPressedCommand =
             ReactiveCommand.Create<ChannelConfigurationItem>(ChannelConfigurationItemPressed);
-        
+
         initialize();
     }
 
@@ -113,7 +120,7 @@ public class MainViewModel : ViewModelBase
 
         ChannelConfigurationItemPressedCommand =
             ReactiveCommand.Create<ChannelConfigurationItem>(ChannelConfigurationItemPressed);
-        
+
         initialize();
     }
 
@@ -123,24 +130,24 @@ public class MainViewModel : ViewModelBase
         var tick = 0;
         var input = 0.0;
 
-        var tempTimer = new DispatcherTimer()
+        var tempTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromSeconds(1/60.0)
+            Interval = TimeSpan.FromSeconds(1 / 60.0)
         };
 
         tempTimer.Tick += (s, e) =>
         {
             tick++;
-            
+
             // Slow down ticks
             input = tick / 20f;
-            
+
             // Scale value
-            var scale = _volumeContainerSize/2f;
-            
+            var scale = _volumeContainerSize / 2f;
+
             VolumePercentPosition = (Math.Sin(input) + 1) * scale;
         };
-        
+
         tempTimer.Start();
     }
 

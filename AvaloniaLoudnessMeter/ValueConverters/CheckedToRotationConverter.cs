@@ -12,7 +12,7 @@ public class CheckedToRotationConverter : IValueConverter
     {
         if (value is bool isExpanded)
             return new RotateTransform(isExpanded ? -90 : 0);
-        
+
         return new BindingNotification(new InvalidCastException(), BindingErrorType.Error);
     }
 

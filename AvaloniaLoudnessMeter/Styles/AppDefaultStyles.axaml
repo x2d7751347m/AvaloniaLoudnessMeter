@@ -3,13 +3,13 @@
     <Design.PreviewWith>
         <Border Background="White">
             <StackPanel Margin="50">
-                <Label Content="My Title"></Label>
+                <Label Content="My Title" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <!-- Label -->
     <Style Selector="Label">
-        <Setter Property="Foreground" Value="Black"></Setter>
+        <Setter Property="Foreground" Value="Black" />
     </Style>
 </Styles>
