@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaLoudnessMeter.ViewModels"
              xmlns:styles="clr-namespace:AvaloniaLoudnessMeter.Styles"
+             xmlns:valueConverters="clr-namespace:AvaloniaLoudnessMeter.ValueConverters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
              x:Class="AvaloniaLoudnessMeter.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -12,6 +13,10 @@
 	         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
+    
+    <UserControl.Resources>
+        <valueConverters:CheckedToRotationConverter x:Key="CheckedToRotationConverter"></valueConverters:CheckedToRotationConverter>
+    </UserControl.Resources>
 
     <UserControl.Styles>
 
@@ -38,16 +43,95 @@
             animationTime="0.3"
             Grid.Row="0" Grid.RowSpan="3"
             Open="{Binding ChannelConfigurationListIsOpen, Mode=TwoWay}">
-            <Border Padding="20" Background="White" BorderThickness="1" BorderBrush="#ddd" CornerRadius="5">
+            <Border Padding="0" Background="White" BorderThickness="1" BorderBrush="#ddd" CornerRadius="5">
 
-                <ItemsControl ItemsSource="{Binding ChannelConfigurations}">
+                <Border.Resources>
+                    <ControlTheme x:Key="SmallExpander"
+                                  TargetType="Expander">
+                        <Setter Property="ContentTransition">
+                            <Setter.Value>
+                                <CrossFade Duration="00:00:00.25" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style Selector="^[ExpandDirection=Down]">
+                            <Setter Property="Template">
+                                <ControlTemplate>
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="{TemplateBinding CornerRadius}">
+                                        <StackPanel>
+                                            
+                                        <Grid RowDefinitions="*, Auto">
+                                            <ToggleButton Name="PART_toggle"
+                                                          Grid.Row="0"
+                                                          Padding="0"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                                          Content="{TemplateBinding Header}"
+                                                          IsChecked="{TemplateBinding IsExpanded,
+                                                        Mode=TwoWay}" 
+                                                          >
+                                                <ToggleButton.Template>
+                                                            <ControlTemplate>
+                                                                <Border Background="{TemplateBinding Background}"
+                                                                        BorderThickness="1">
+                                                                    <Grid ColumnDefinitions="*,Auto">
+                                                                        <ContentControl Grid.Column="0" Content="{TemplateBinding Content}"></ContentControl>
+                                                                        <Border Grid.Column="1"
+                                                                            Padding="8"
+                                                                            RenderTransform="{TemplateBinding IsChecked, Converter={StaticResource CheckedToRotationConverter}}"
+                                                                            HorizontalAlignment="Center"
+                                                                            VerticalAlignment="Center">
+                                                                            <Path HorizontalAlignment="Center"
+                                                                                VerticalAlignment="Center"
+                                                                                Data="M 6 0 L 0 6 L 6 12"
+                                                                                Stroke="#bbb"
+                                                                                StrokeThickness="2" />
+                                                                        </Border>
+                                                                        
+                                                                    </Grid>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                </ToggleButton.Template>
+                                            </ToggleButton>
+                                            <ContentPresenter Name="PART_ContentPresenter2"
+                                                              Grid.Row="1"
+                                                              Padding="{TemplateBinding Padding}"
+                                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              IsVisible="{TemplateBinding IsExpanded}" />
+                                        </Grid>
+                                            <Rectangle Fill="#999" Height="1" Margin="7,0"></Rectangle>
+                                            
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter>
+                        </Style>
+                    </ControlTheme>
+                </Border.Resources>
+
+                <Border.Styles>
+                    <Style Selector="Expander.small">
+                        <Setter Property="Theme" Value="{StaticResource SmallExpander}" />
+                    </Style>
+                </Border.Styles>
+                
+                <ItemsControl 
+                    ItemsSource="{Binding ChannelConfigurations}"
+                    Margin="0,0,0,-2">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Expander>
+                            <Expander Classes="small" IsExpanded="True">
                                 <Expander.Header>
                                     <Label Content="{Binding Group}" />
                                 </Expander.Header>
                                 <Button
+                                    HorizontalAlignment="Stretch"
+                                    Background="White"
                                     Content="{Binding Text}"
                                     Command="{Binding $parent[styles:AnimatedPopup].((vm:MainViewModel)DataContext).ChannelConfigurationItemPressedCommand}"
                                     CommandParameter="{Binding}" />
@@ -196,15 +280,15 @@
                     </Button>
                 </StackPanel>
             </StackPanel>
-            
+
             <Border Grid.Column="2">
-            
+
                 <Expander VerticalAlignment="Top" HorizontalAlignment="Left">
-            
+
                     <Expander.Header>
                         <Label Content="This is a long header text" />
                     </Expander.Header>
-            
+
                     <StackPanel>
                         <Label Content="Hello world" />
                         <Label Content="Hello world" />

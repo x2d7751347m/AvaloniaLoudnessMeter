@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
 using AvaloniaLoudnessMeter.DataModels;
@@ -18,12 +17,12 @@ public class MainViewModel : ViewModelBase
 
     #region Public Properties
 
-    private bool _channelConfigurationListIsOpen;
+    private bool _channelConfigurationListIsOpen = true;
 
     public bool ChannelConfigurationListIsOpen
     {
         get => _channelConfigurationListIsOpen;
-        set { this.RaiseAndSetIfChanged(ref _channelConfigurationListIsOpen, value); }
+        set => this.RaiseAndSetIfChanged(ref _channelConfigurationListIsOpen, value);
     }
 
     public string BoldTitle { get; set; } = "AVALONIA";
@@ -32,13 +31,11 @@ public class MainViewModel : ViewModelBase
 
 
     private ObservableCollection<ChannelConfigurationItem> _channelConfigurations;
+
     public ObservableCollection<ChannelConfigurationItem> ChannelConfigurations
     {
         get => _channelConfigurations;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _channelConfigurations, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _channelConfigurations, value);
     }
 
     private ChannelConfigurationItem? _selectedChannelConfiguration;
