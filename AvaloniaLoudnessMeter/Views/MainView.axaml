@@ -261,16 +261,16 @@
             </Grid>
             <!-- Details Panel -->
             <StackPanel Grid.Column="1" Width="170" Margin="0,15,10,15">
-                <styles:LargeLabelControl LargeText="-21.1 LUFS" SmallText="SHORT TERM" />
-                <styles:LargeLabelControl LargeText="-20.7 LUFS" SmallText="INTEGRATED"
+                <styles:LargeLabelControl LargeText="{Binding ShortTermLoudness}" SmallText="SHORT TERM" />
+                <styles:LargeLabelControl LargeText="{Binding IntegratedLoudness}" SmallText="INTEGRATED"
                                           Background="{DynamicResource LightBlueBrush}" />
-                <styles:LargeLabelControl LargeText="-9.5 LU" SmallText="LOUDNESS RANGE" />
-                <styles:LargeLabelControl LargeText="-11.5 LU" SmallText="REALTIME DYNAMICS" />
-                <styles:LargeLabelControl LargeText="-20.5 LU" SmallText="AVG.DYNAMIC (PLR)" Margin="0,0,0,13" />
+                <styles:LargeLabelControl LargeText="{Binding LoudnessRange}" SmallText="LOUDNESS RANGE" />
+                <styles:LargeLabelControl LargeText="{Binding RealtimeDynamics}" SmallText="REALTIME DYNAMICS" />
+                <styles:LargeLabelControl LargeText="{Binding AverageDynamics}" SmallText="AVG.DYNAMIC (PLR)" Margin="0,0,0,13" />
 
-                <styles:LargeLabelControl LargeText="-9.8 LUFS" SmallText="MOMENTARY MAX" Classes="button" />
-                <styles:LargeLabelControl LargeText="-15.1 LUFS" SmallText="SHORT TERM MAX" Classes="button" />
-                <styles:LargeLabelControl LargeText="0.7dB" SmallText="TRUE PEAK MAX" Classes="button"
+                <styles:LargeLabelControl LargeText="{Binding MomentaryMaxLoudness}" SmallText="MOMENTARY MAX" Classes="button" />
+                <styles:LargeLabelControl LargeText="{Binding ShortTermMaxLoudness}" SmallText="SHORT TERM MAX" Classes="button" />
+                <styles:LargeLabelControl LargeText="{Binding TruePeakMax}" SmallText="TRUE PEAK MAX" Classes="button"
                                           Margin="0,0,0,10" />
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

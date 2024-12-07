@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -11,11 +14,32 @@ using Avalonia.Threading;
 using AvaloniaLoudnessMeter.Services;
 using AvaloniaLoudnessMeter.ViewModels;
 using ManagedBass;
+using NWaves.Signals;
+using NWaves.Utils;
 
 namespace AvaloniaLoudnessMeter.Views;
 
 public partial class MainView : UserControl
 {
+    #region Private Members
+    
+    /// <summary>
+    /// The main view of this view
+    /// </summary>
+    private MainViewModel mViewModel => (MainViewModel)DataContext;
+
+    private readonly Control mChannelConfigPopup;
+    private readonly Control mChannelConfigButton;
+    private readonly Control mMainGrid;
+    private readonly Control mVolumeContainer;
+
+    /// <summary>
+    ///     The timeout timer to detect when auto-sizing has finished firing
+    /// </summary>
+    private readonly Timer mSizingTimer;
+
+    #endregion
+    
     #region Constructor
 
     public MainView()
@@ -39,47 +63,22 @@ public partial class MainView : UserControl
 
     #endregion
 
+    /// <summary>
+    /// Updates the application window/control sizes dynamically
+    /// </summary>
     private void UpdateSizes()
     {
-        ((MainViewModel)DataContext).VolumeContainerSize = mVolumeContainer.Bounds.Height;
+        (mViewModel).VolumeContainerSize = mVolumeContainer.Bounds.Height;
     }
 
+    /// <summary>
+    /// Run on-load initialization code
+    /// </summary>
+    /// <param name="routedEventArgs"></param>
     protected override async void OnLoaded(RoutedEventArgs routedEventArgs)
     {
-        await ((MainViewModel)DataContext).LoadSettingsAsync();
-
-        Task.Run(async () =>
-        {
-            // Output all devices, then select one
-            foreach (var device in RecordingDevice.Enumerate()) Console.WriteLine($"{device?.Index}: {device?.Name}");
-
-            var outputPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "MBass");
-            Directory.CreateDirectory(outputPath);
-
-            var filePath = Path.Combine(outputPath, DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".wav");
-            using var writer =
-                new WaveFileWriter(
-                    new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read),
-                    new WaveFormat());
-
-            using var mCaptureDevice = new AudioCaptureService(0);
-
-            mCaptureDevice.DataAvailable += (buffer, length) =>
-            {
-                writer.Write(buffer, length);
-
-                Console.WriteLine(BitConverter.ToString(buffer));
-            };
-
-            mCaptureDevice.Start();
-
-            await Task.Delay(3000);
-
-            mCaptureDevice.Stop();
-
-            await Task.Delay(100);
-        });
-
+        await (mViewModel).LoadCommand();
+        
         base.OnLoaded(routedEventArgs);
     }
 
@@ -105,20 +104,7 @@ public partial class MainView : UserControl
 
     private void InputElement_OnPointerPressed(object sender, PointerPressedEventArgs e)
     {
-        ((MainViewModel)DataContext).ChannelConfigurationButtonPressed();
+        (mViewModel).ChannelConfigurationButtonPressed();
     }
 
-    #region Private Members
-
-    private readonly Control mChannelConfigPopup;
-    private readonly Control mChannelConfigButton;
-    private readonly Control mMainGrid;
-    private readonly Control mVolumeContainer;
-
-    /// <summary>
-    ///     The timeout timer to detect when auto-sizing has finished firing
-    /// </summary>
-    private readonly Timer mSizingTimer;
-
-    #endregion
 }

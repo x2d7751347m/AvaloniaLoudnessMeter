@@ -13,7 +13,8 @@ public class MainViewModel : ViewModelBase
 {
     #region Private Members
 
-    private readonly IAudioInterfaceService mAudioInterfaceService;
+    // The audio capture service
+    private IAudioCaptureService _mAudioCaptureService;
 
     #endregion
 
@@ -30,6 +31,70 @@ public class MainViewModel : ViewModelBase
     public string BoldTitle { get; set; } = "AVALONIA";
 
     public string RegularTitle { get; set; } = "LOUDNESS METER";
+    
+    private string _shortTermLoudness = "0 LUFS";
+    
+    private string _integratedLoudness = "0 LUFS";
+    
+    private string _loudnessRange = "0 LU";
+    
+    private string _realtimeDynamics = "0 LU";
+    
+    private string _averageDynamics = "0 LU";
+    
+    private string _momentaryMaxLoudness = "0 LUFS";
+    
+    private string _shortTermMaxLoudness = "0 LUFS";
+    
+    private string _truePeakMax = "0 dB";
+
+    public string ShortTermLoudness
+    {
+        get => _shortTermLoudness;
+        set => this.RaiseAndSetIfChanged(ref _shortTermLoudness, value);
+    }
+
+    public string IntegratedLoudness
+    {
+        get => _integratedLoudness;
+        set => this.RaiseAndSetIfChanged(ref _integratedLoudness, value);
+    }
+
+    public string LoudnessRange
+    {
+        get => _loudnessRange;
+        set => this.RaiseAndSetIfChanged(ref _loudnessRange, value);
+    }
+
+    public string RealtimeDynamics
+    {
+        get => _realtimeDynamics;
+        set => this.RaiseAndSetIfChanged(ref _realtimeDynamics, value);
+    }
+
+    public string AverageDynamics
+    {
+        get => _averageDynamics;
+        set => this.RaiseAndSetIfChanged(ref _averageDynamics, value);
+    }
+
+    public string MomentaryMaxLoudness
+    {
+        get => _momentaryMaxLoudness;
+        set => this.RaiseAndSetIfChanged(ref _momentaryMaxLoudness, value);
+    }
+
+    public string ShortTermMaxLoudness
+    {
+        get => _shortTermMaxLoudness;
+        set => this.RaiseAndSetIfChanged(ref _shortTermMaxLoudness, value);
+    }
+
+    public string TruePeakMax
+    {
+        get => _truePeakMax;
+        set => this.RaiseAndSetIfChanged(ref _truePeakMax, value);
+    }
 
     private double _volumePercentPosition;
 
@@ -86,11 +151,16 @@ public class MainViewModel : ViewModelBase
         ChannelConfigurationListIsOpen ^= true;
     }
 
-    public async Task LoadSettingsAsync()
+    /// <summary>
+    /// Do initial loading of data and settings up services
+    /// </summary>
+    public async Task LoadCommand()
     {
-        var channelConfigurations = await mAudioInterfaceService.GetChannelConfigurationsAsync();
+        var channelConfigurations = await _mAudioCaptureService.GetChannelConfigurationsAsync();
 
         ChannelConfigurations = new ObservableCollection<ChannelConfigurationItem>(channelConfigurations);
+
+        StartCapture(3);
     }
 
     #endregion
@@ -100,10 +170,10 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     ///     Default constructor
     /// </summary>
-    /// <param name="audioInterfaceService">The audio interface service</param>
-    public MainViewModel(IAudioInterfaceService audioInterfaceService)
+    /// <param name="audioCaptureService">The audio interface service</param>
+    public MainViewModel(IAudioCaptureService audioCaptureService)
     {
-        mAudioInterfaceService = audioInterfaceService;
+        _mAudioCaptureService = audioCaptureService;
 
         ChannelConfigurationItemPressedCommand =
             ReactiveCommand.Create<ChannelConfigurationItem>(ChannelConfigurationItemPressed);
@@ -116,13 +186,15 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public MainViewModel()
     {
-        mAudioInterfaceService = new DummyAudioInterfaceService();
+        _mAudioCaptureService = new BassAudioCaptureService();
 
         ChannelConfigurationItemPressedCommand =
             ReactiveCommand.Create<ChannelConfigurationItem>(ChannelConfigurationItemPressed);
 
         initialize();
     }
+    
+    #endregion
 
     private void initialize()
     {
@@ -150,6 +222,29 @@ public class MainViewModel : ViewModelBase
 
         tempTimer.Start();
     }
-
-    #endregion
+    
+    /// <summary>
+    /// Starts capturing audio from the specified device
+    /// </summary>
+    /// <param name="deviceId">The device ID</param>
+    private void StartCapture(int deviceId)
+    {
+        _mAudioCaptureService = new BassAudioCaptureService(deviceId);
+        
+        // Listen out for chunks of information
+        _mAudioCaptureService.AudioChunkAvailable += audioChunkData =>
+        {
+            ShortTermLoudness = $"{audioChunkData.ShortTermLUFS:0.0} LUFS";
+            IntegratedLoudness = $"{audioChunkData.IntegratedLUFS:0.0} LUFS";
+            LoudnessRange = $"{audioChunkData.LoudnessRange:0.0} LU";
+            RealtimeDynamics = $"{audioChunkData.RealtimeDynamics:0.0} LU";
+            AverageDynamics = $"{audioChunkData.AverageRealtimeDynamics:0.0} LU";
+            MomentaryMaxLoudness = $"{audioChunkData.MomentaryMaxLUFS:0.0} LUFS";
+            ShortTermMaxLoudness = $"{audioChunkData.ShortTermMaxLUFS:0.0} LUFS";
+            TruePeakMax = $"{audioChunkData.TruePeakMax:0.0} dB";
+        };
+        
+        // Start capturing
+        _mAudioCaptureService.Start();
+    }
 }
