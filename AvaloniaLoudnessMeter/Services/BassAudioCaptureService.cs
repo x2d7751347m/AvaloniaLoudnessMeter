@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using AvaloniaLoudnessMeter.DataModels;
 using ManagedBass;
 using NWaves.Signals;
@@ -14,62 +13,44 @@ namespace AvaloniaLoudnessMeter.Services;
 
 public class BassAudioCaptureService : IDisposable, IAudioCaptureService
 {
-
-    #region Private Members
-    
-    /// <summary>
-    /// The buffer for a short capture of microphone audio
-    /// </summary>
-    private byte[] mBuffer;
-
-    /// <summary>
-    /// The device ID we want to capture
-    /// </summary>
-    private int mDevice;
-    
-    /// <summary>
-    /// The handle to the device we want to capture
-    /// </summary>
-    private int mHandle;
-
-    /// <summary>
-    /// The last few sets of captured audio bytes, converted to LUFS
-    /// </summary>
-    private Queue<double> mLufs = new Queue<double>();
-        
-    /// <summary>
-    /// The frequency to capture at
-    /// </summary>
-    private int mCaptureFrequency = 44100;
-    
-    #endregion
-    
-    #region Public Events
-    
-    /// <inheritdoc />
-    public event Action<AudioChunkData> AudioChunkAvailable;
-    
-    #endregion
-    
     #region Default Constructor
-    
+
     /// <summary>
-    /// Initializes the audio capture service, and starts capturing the specified device ID
+    ///     Initializes the audio capture service, and starts capturing the specified device ID
     /// </summary>
     /// <param name="deviceId"></param>
     /// <param name="frequency"></param>
-    public BassAudioCaptureService(int deviceId = 1, int frequency = 44100)
+    public BassAudioCaptureService()
+    {
+
+        // Initialize and start
+        Bass.Init();
+    }
+
+    #endregion
+
+    /// <inheritdoc />
+    public void InitCapture(int deviceId = 1, int frequency = 44100)
     {
         // Store device ID
         mDevice = deviceId;
 
-        // Initialize and start
-        Bass.Init(); 
+        try
+        {
+            // Attempt to free previous resources
+            Bass.RecordFree();
+        }
+        catch
+        {
+            // ignored
+        }
+
+        // Initialize new device
         Bass.RecordInit(mDevice);
 
         // Start recording(but in a paused state)
-        mHandle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, AudioChunkCaptured);
-        
+        mHandle = Bass.RecordStart(frequency, 2, BassFlags.RecordPause, 20, AudioChunkCaptured);
+
         // Output all devices, then select one
         // foreach (var device in RecordingDevice.Enumerate()) Console.WriteLine($"{device?.Index}: {device?.Name}");
         //
@@ -81,15 +62,63 @@ public class BassAudioCaptureService : IDisposable, IAudioCaptureService
         //     new WaveFileWriter(
         //         new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read),
         //         new WaveFormat());
+    }
 
+    #region Public Events
+
+    /// <inheritdoc />
+    public event Action<AudioChunkData> AudioChunkAvailable;
+
+    #endregion
+
+    #region Channel Configuration Methods
+
+    public Task<List<ChannelConfigurationItem>> GetChannelConfigurationsAsync()
+    {
+        return Task.FromResult(new List<ChannelConfigurationItem>([
+            new ChannelConfigurationItem("Mono Stereo Configuration", "Mono", "Mono"),
+            new ChannelConfigurationItem("Mono Stereo Configuration", "Stereo", "Stereo"),
+            new ChannelConfigurationItem("5.1 Surround", "5.1 DTS - (L, R, Ls, Rs, C, LFE)", "5.1 DTS"),
+            new ChannelConfigurationItem("5.1 Surround", "5.1 DTS - (L, R, C, LFE, Ls, Rs)", "5.1 ITU"),
+            new ChannelConfigurationItem("5.1 Surround", "5.1 DTS - (L, R, Ls, Rs, C, LFE)", "5.1 FILM")
+        ]));
     }
 
     #endregion
 
-    #region Capture Audio Methods
-    
+    #region Private Members
+
     /// <summary>
-    /// Call back from the audio recording, to process each chunk of audio data
+    ///     The buffer for a short capture of microphone audio
+    /// </summary>
+    private byte[] mBuffer;
+
+    /// <summary>
+    ///     The device ID we want to capture
+    /// </summary>
+    private int mDevice;
+
+    /// <summary>
+    ///     The handle to the device we want to capture
+    /// </summary>
+    private int mHandle;
+
+    /// <summary>
+    ///     The last few sets of captured audio bytes, converted to LUFS
+    /// </summary>
+    private readonly Queue<double> mLufs = new();
+
+    /// <summary>
+    ///     The frequency to capture at
+    /// </summary>
+    private readonly int mCaptureFrequency = 44100;
+
+    #endregion
+
+    #region Capture Audio Methods
+
+    /// <summary>
+    ///     Call back from the audio recording, to process each chunk of audio data
     /// </summary>
     /// <param name="handle"></param>
     /// <param name="buffer"></param>
@@ -108,27 +137,27 @@ public class BassAudioCaptureService : IDisposable, IAudioCaptureService
 
         return true;
     }
-    
+
     /// <summary>
-    /// Calculates usable information from an audio chunk
+    ///     Calculates usable information from an audio chunk
     /// </summary>
     /// <param name="buffer">The audio buffer</param>
     private void CalculateValues(byte[] buffer)
     {
         // Get total PCM 16 samples in this buffer (16 bits per sample)
-        var sampleCount = buffer.Length/2;
-        
+        var sampleCount = buffer.Length / 2;
+
         // Create our Discrete Signal ready to be filled with information
         var signal = new DiscreteSignal(mCaptureFrequency, sampleCount);
-        
+
         // Loop all bytes and extract the 16 bits, into signal floats
         using var reader = new BinaryReader(new MemoryStream(buffer));
 
-        for (int i = 0; i < sampleCount; i++)
-            signal[i] = reader.ReadInt16()/32768f;
-        
+        for (var i = 0; i < sampleCount; i++)
+            signal[i] = reader.ReadInt16() / 32768f;
+
         // Calculate the LUFS
-        var lufs = Scale.ToDecibel(signal.Rms());
+        var lufs = Scale.ToDecibel(signal.Rms() * 1.2);
         mLufs.Enqueue(lufs);
 
         // Keep list to 10 samples
@@ -137,39 +166,24 @@ public class BassAudioCaptureService : IDisposable, IAudioCaptureService
 
         // Calculate the average
         var averageLufs = mLufs.Average();
-        
+
         // Fire off this chunk of information to listeners
         AudioChunkAvailable?.Invoke(new AudioChunkData
-            (
-                ShortTermLUFS: averageLufs,
-                Loudness: lufs,
-                LoudnessRange: lufs * 0.9,
-                RealtimeDynamics: lufs * 0.8,
-                AverageRealtimeDynamics: lufs * 0.7,
-                TruePeakMax: lufs * 0.6,
-                IntegratedLUFS: lufs * 0.5,
-                MomentaryMaxLUFS: lufs * 0.4,
-                ShortTermMaxLUFS: lufs * 0.3
-                ));
-    }
-    
-    #endregion
-
-    #region Channel Configuration Methods
-    
-    public Task<List<ChannelConfigurationItem>> GetChannelConfigurationsAsync()
-    {
-        return Task.FromResult(new List<ChannelConfigurationItem>([
-            new ChannelConfigurationItem("Mono Stereo Configuration", "Mono", "Mono"),
-            new ChannelConfigurationItem("Mono Stereo Configuration", "Stereo", "Stereo"),
-            new ChannelConfigurationItem("5.1 Surround", "5.1 DTS - (L, R, Ls, Rs, C, LFE)", "5.1 DTS"),
-            new ChannelConfigurationItem("5.1 Surround", "5.1 DTS - (L, R, C, LFE, Ls, Rs)", "5.1 ITU"),
-            new ChannelConfigurationItem("5.1 Surround", "5.1 DTS - (L, R, Ls, Rs, C, LFE)", "5.1 FILM")
-        ]));
+        (
+            ShortTermLUFS: averageLufs,
+            Loudness: averageLufs,
+            LoudnessRange: averageLufs + averageLufs * 0.9,
+            RealtimeDynamics: averageLufs + averageLufs * 0.8,
+            AverageRealtimeDynamics: averageLufs + averageLufs * 0.7,
+            TruePeakMax: averageLufs + averageLufs * 0.6,
+            IntegratedLUFS: averageLufs + averageLufs * 0.5,
+            MomentaryMaxLUFS: averageLufs + averageLufs * 0.4,
+            ShortTermMaxLUFS: averageLufs + averageLufs * 0.3
+        ));
     }
 
     #endregion
-    
+
     #region Public Control Methods
 
     /// <inheritdoc />
@@ -183,7 +197,7 @@ public class BassAudioCaptureService : IDisposable, IAudioCaptureService
     {
         Bass.ChannelStop(mHandle);
     }
-    
+
     public void Dispose()
     {
         Bass.CurrentRecordingDevice = mDevice;

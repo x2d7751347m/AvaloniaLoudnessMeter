@@ -191,7 +191,6 @@
 
         <!-- Main area -->
         <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *" Background="{DynamicResource DarkblueBrush}">
-            <!-- Volume bar-->
             <Grid Grid.Column="0" Width="150" RowDefinitions="*, Auto, Auto" Margin="0,20">
 
                 <!-- Volume Meter Gauge -->
@@ -222,9 +221,13 @@
                     <Label Grid.Column="0" Grid.Row="10" />
 
                     <!-- Volume Bar -->
-                    <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="11" Width="20" RowDefinitions="23*,37*">
+                    <Grid Name="VolumeBar" Grid.Row="0" Grid.Column="1" Grid.RowSpan="11" Width="20"
+                          RowDefinitions="23*,37*">
                         <Rectangle Grid.Row="0" Margin="0,8,0,-8" Fill="#b05c4e" Width="20" />
                         <Rectangle Grid.Row="1" Margin="0,8,0,0" Fill="White" Width="20" />
+                        <Rectangle Grid.Row="0" VerticalAlignment="Top" Grid.RowSpan="2"
+                                   Height="{Binding VolumeBarMaskHeight}" Margin="0,8,0,0"
+                                   Fill="{DynamicResource DarkblueBrush}" Width="20" />
                     </Grid>
 
                     <Label Grid.Column="2" Grid.Row="0">—</Label>
@@ -266,10 +269,13 @@
                                           Background="{DynamicResource LightBlueBrush}" />
                 <styles:LargeLabelControl LargeText="{Binding LoudnessRange}" SmallText="LOUDNESS RANGE" />
                 <styles:LargeLabelControl LargeText="{Binding RealtimeDynamics}" SmallText="REALTIME DYNAMICS" />
-                <styles:LargeLabelControl LargeText="{Binding AverageDynamics}" SmallText="AVG.DYNAMIC (PLR)" Margin="0,0,0,13" />
+                <styles:LargeLabelControl LargeText="{Binding AverageDynamics}" SmallText="AVG.DYNAMIC (PLR)"
+                                          Margin="0,0,0,13" />
 
-                <styles:LargeLabelControl LargeText="{Binding MomentaryMaxLoudness}" SmallText="MOMENTARY MAX" Classes="button" />
-                <styles:LargeLabelControl LargeText="{Binding ShortTermMaxLoudness}" SmallText="SHORT TERM MAX" Classes="button" />
+                <styles:LargeLabelControl LargeText="{Binding MomentaryMaxLoudness}" SmallText="MOMENTARY MAX"
+                                          Classes="button" />
+                <styles:LargeLabelControl LargeText="{Binding ShortTermMaxLoudness}" SmallText="SHORT TERM MAX"
+                                          Classes="button" />
                 <styles:LargeLabelControl LargeText="{Binding TruePeakMax}" SmallText="TRUE PEAK MAX" Classes="button"
                                           Margin="0,0,0,10" />
 

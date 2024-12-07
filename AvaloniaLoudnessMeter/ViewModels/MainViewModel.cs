@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using AvaloniaLoudnessMeter.DataModels;
 using AvaloniaLoudnessMeter.Services;
 using ReactiveUI;
@@ -11,10 +10,84 @@ namespace AvaloniaLoudnessMeter.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    private void initialize()
+    {
+        // // Temp code to move volume position
+        // var tick = 0;
+        // var input = 0.0;
+        //
+        // var tempTimer = new DispatcherTimer
+        // {
+        //     Interval = TimeSpan.FromSeconds(1 / 60.0)
+        // };
+        //
+        // tempTimer.Tick += (s, e) =>
+        // {
+        //     tick++;
+        //
+        //     // Slow down ticks
+        //     input = tick / 20f;
+        //
+        //     // Scale value
+        //     var scale = _volumeContainerHeight / 2f;
+        //
+        //     VolumePercentPosition = (Math.Sin(input) + 1) * scale;
+        // };
+        //
+        // tempTimer.Start();
+    }
+
+    /// <summary>
+    ///     Starts capturing audio from the specified device
+    /// </summary>
+    /// <param name="deviceId">The device ID</param>
+    private void StartCapture(int deviceId)
+    {
+        // Initialize capturing on specific device
+        _mAudioCaptureService.InitCapture(deviceId);
+        
+        // Listen out for chunks of information
+        _mAudioCaptureService.AudioChunkAvailable += audioChunkData => { ProcessAudioChunk(audioChunkData); };
+
+        // Start capturing
+        _mAudioCaptureService.Start();
+    }
+
+    private void ProcessAudioChunk(AudioChunkData audioChunkData)
+    {
+        // Counter between 0-1-2
+        mUpdateCounter = (mUpdateCounter + 1) % 3;
+
+        // Every time counter is at 0...
+        if (mUpdateCounter == 0)
+        {
+            ShortTermLoudness = $"{Math.Max(-60, audioChunkData.ShortTermLUFS):0.0} LUFS";
+            IntegratedLoudness = $"{Math.Max(-60, audioChunkData.IntegratedLUFS):0.0} LUFS";
+            LoudnessRange = $"{Math.Max(-60, audioChunkData.LoudnessRange):0.0} LU";
+            RealtimeDynamics = $"{Math.Max(-60, audioChunkData.RealtimeDynamics):0.0} LU";
+            AverageDynamics = $"{Math.Max(-60, audioChunkData.AverageRealtimeDynamics):0.0} LU";
+            MomentaryMaxLoudness = $"{Math.Max(-60, audioChunkData.MomentaryMaxLUFS):0.0} LUFS";
+            ShortTermMaxLoudness = $"{Math.Max(-60, audioChunkData.ShortTermMaxLUFS):0.0} LUFS";
+            TruePeakMax = $"{Math.Max(-60, audioChunkData.TruePeakMax):0.0} dB";
+        }
+
+        // Set volume bar height
+        VolumeBarMaskHeight = Math.Min(_volumeBarHeight, _volumeBarHeight / 60 * -audioChunkData.ShortTermLUFS);
+
+        // Set Volume Arrow height
+        VolumePercentPosition = Math.Min(_volumeContainerHeight,
+            _volumeContainerHeight / 60 * -audioChunkData.IntegratedLUFS);
+    }
+
     #region Private Members
 
     // The audio capture service
     private IAudioCaptureService _mAudioCaptureService;
+
+    /// <summary>
+    ///     A slow tick counter to update the text slower than the graphs and bars
+    /// </summary>
+    private int mUpdateCounter;
 
     #endregion
 
@@ -31,21 +104,21 @@ public class MainViewModel : ViewModelBase
     public string BoldTitle { get; set; } = "AVALONIA";
 
     public string RegularTitle { get; set; } = "LOUDNESS METER";
-    
+
     private string _shortTermLoudness = "0 LUFS";
-    
+
     private string _integratedLoudness = "0 LUFS";
-    
+
     private string _loudnessRange = "0 LU";
-    
+
     private string _realtimeDynamics = "0 LU";
-    
+
     private string _averageDynamics = "0 LU";
-    
+
     private string _momentaryMaxLoudness = "0 LUFS";
-    
+
     private string _shortTermMaxLoudness = "0 LUFS";
-    
+
     private string _truePeakMax = "0 dB";
 
     public string ShortTermLoudness
@@ -104,12 +177,28 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _volumePercentPosition, value);
     }
 
-    private double _volumeContainerSize;
+    private double _volumeContainerHeight;
 
-    public double VolumeContainerSize
+    public double VolumeContainerHeight
     {
-        get => _volumeContainerSize;
-        set => this.RaiseAndSetIfChanged(ref _volumeContainerSize, value);
+        get => _volumeContainerHeight;
+        set => this.RaiseAndSetIfChanged(ref _volumeContainerHeight, value);
+    }
+
+    private double _volumeBarHeight;
+
+    public double VolumeBarHeight
+    {
+        get => _volumeBarHeight;
+        set => this.RaiseAndSetIfChanged(ref _volumeBarHeight, value);
+    }
+
+    private double _volumeBarMaskHeight;
+
+    public double VolumeBarMaskHeight
+    {
+        get => _volumeBarMaskHeight;
+        set => this.RaiseAndSetIfChanged(ref _volumeBarMaskHeight, value);
     }
 
 
@@ -152,7 +241,7 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Do initial loading of data and settings up services
+    ///     Do initial loading of data and settings up services
     /// </summary>
     public async Task LoadCommand()
     {
@@ -193,58 +282,6 @@ public class MainViewModel : ViewModelBase
 
         initialize();
     }
-    
+
     #endregion
-
-    private void initialize()
-    {
-        // Temp code to move volume position
-        var tick = 0;
-        var input = 0.0;
-
-        var tempTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromSeconds(1 / 60.0)
-        };
-
-        tempTimer.Tick += (s, e) =>
-        {
-            tick++;
-
-            // Slow down ticks
-            input = tick / 20f;
-
-            // Scale value
-            var scale = _volumeContainerSize / 2f;
-
-            VolumePercentPosition = (Math.Sin(input) + 1) * scale;
-        };
-
-        tempTimer.Start();
-    }
-    
-    /// <summary>
-    /// Starts capturing audio from the specified device
-    /// </summary>
-    /// <param name="deviceId">The device ID</param>
-    private void StartCapture(int deviceId)
-    {
-        _mAudioCaptureService = new BassAudioCaptureService(deviceId);
-        
-        // Listen out for chunks of information
-        _mAudioCaptureService.AudioChunkAvailable += audioChunkData =>
-        {
-            ShortTermLoudness = $"{audioChunkData.ShortTermLUFS:0.0} LUFS";
-            IntegratedLoudness = $"{audioChunkData.IntegratedLUFS:0.0} LUFS";
-            LoudnessRange = $"{audioChunkData.LoudnessRange:0.0} LU";
-            RealtimeDynamics = $"{audioChunkData.RealtimeDynamics:0.0} LU";
-            AverageDynamics = $"{audioChunkData.AverageRealtimeDynamics:0.0} LU";
-            MomentaryMaxLoudness = $"{audioChunkData.MomentaryMaxLUFS:0.0} LUFS";
-            ShortTermMaxLoudness = $"{audioChunkData.ShortTermMaxLUFS:0.0} LUFS";
-            TruePeakMax = $"{audioChunkData.TruePeakMax:0.0} dB";
-        };
-        
-        // Start capturing
-        _mAudioCaptureService.Start();
-    }
 }
