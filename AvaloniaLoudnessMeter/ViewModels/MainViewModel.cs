@@ -1,10 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using AvaloniaLoudnessMeter.DataModels;
 using AvaloniaLoudnessMeter.Services;
+using DynamicData;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
+using SkiaSharp;
 
 namespace AvaloniaLoudnessMeter.ViewModels;
 
@@ -12,29 +21,19 @@ public class MainViewModel : ViewModelBase
 {
     private void initialize()
     {
-        // // Temp code to move volume position
-        // var tick = 0;
-        // var input = 0.0;
-        //
-        // var tempTimer = new DispatcherTimer
-        // {
-        //     Interval = TimeSpan.FromSeconds(1 / 60.0)
-        // };
-        //
-        // tempTimer.Tick += (s, e) =>
-        // {
-        //     tick++;
-        //
-        //     // Slow down ticks
-        //     input = tick / 20f;
-        //
-        //     // Scale value
-        //     var scale = _volumeContainerHeight / 2f;
-        //
-        //     VolumePercentPosition = (Math.Sin(input) + 1) * scale;
-        // };
-        //
-        // tempTimer.Start();
+        MainChartValues.AddRange(Enumerable.Range(0, 200).Select(f => new ObservableValue(0)));
+        
+        Series = new ISeries[]
+        {
+            new LineSeries<ObservableValue>
+            {
+                Values = MainChartValues,
+                GeometrySize = 0,
+                GeometryStroke = null,
+                Fill = new SolidColorPaint(new SKColor(63, 77, 99)),
+                Stroke = new SolidColorPaint(new SKColor(120, 152, 203)) { StrokeThickness = 3 }
+            }
+        };
     }
 
     /// <summary>
@@ -45,9 +44,12 @@ public class MainViewModel : ViewModelBase
     {
         // Initialize capturing on specific device
         _mAudioCaptureService.InitCapture(deviceId);
-        
+
         // Listen out for chunks of information
-        _mAudioCaptureService.AudioChunkAvailable += audioChunkData => { ProcessAudioChunk(audioChunkData); };
+        _mAudioCaptureService.AudioChunkAvailable += audioChunkData =>
+        {
+            ProcessAudioChunk(audioChunkData);
+        };
 
         // Start capturing
         _mAudioCaptureService.Start();
@@ -69,20 +71,26 @@ public class MainViewModel : ViewModelBase
             MomentaryMaxLoudness = $"{Math.Max(-60, audioChunkData.MomentaryMaxLUFS):0.0} LUFS";
             ShortTermMaxLoudness = $"{Math.Max(-60, audioChunkData.ShortTermMaxLUFS):0.0} LUFS";
             TruePeakMax = $"{Math.Max(-60, audioChunkData.TruePeakMax):0.0} dB";
+            
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                MainChartValues.RemoveAt(0);
+                MainChartValues.Add(new (Math.Max(0,60+audioChunkData.ShortTermLUFS)));
+            });
         }
 
         // Set volume bar height
-        VolumeBarMaskHeight = Math.Min(_volumeBarHeight, _volumeBarHeight / 60 * -audioChunkData.ShortTermLUFS);
+        VolumeBarMaskHeight = Math.Min(_volumeBarHeight, _volumeBarHeight / 60 * -audioChunkData.Loudness);
 
         // Set Volume Arrow height
         VolumePercentPosition = Math.Min(_volumeContainerHeight,
-            _volumeContainerHeight / 60 * -audioChunkData.IntegratedLUFS);
+            _volumeContainerHeight / 60 * -audioChunkData.ShortTermLUFS);
     }
 
     #region Private Members
 
     // The audio capture service
-    private IAudioCaptureService _mAudioCaptureService;
+    private readonly IAudioCaptureService _mAudioCaptureService;
 
     /// <summary>
     ///     A slow tick counter to update the text slower than the graphs and bars
@@ -219,6 +227,24 @@ public class MainViewModel : ViewModelBase
     }
 
     public string ChannelConfigurationButtonText => _selectedChannelConfiguration?.ShortText ?? "Select a channel";
+
+    public ObservableCollection<ObservableValue> MainChartValues = new ObservableCollection<ObservableValue>();
+    
+    public ISeries[] Series { get; set; }
+
+    public List<Axis> YAxis { get; set; } = new()
+    {
+        new Axis
+        {
+            MinStep = 10,
+            ForceStepToMin = true,
+            MinLimit = 0,
+            MaxLimit = 60,
+            Labeler = val => (Math.Min(60, Math.Max(0, val)) - 60).ToString(),
+            IsVisible = false
+            // IsInverted = true
+        }
+    };
 
     #endregion
 

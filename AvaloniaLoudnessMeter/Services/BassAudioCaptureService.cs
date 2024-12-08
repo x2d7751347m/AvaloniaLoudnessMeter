@@ -109,6 +109,11 @@ public class BassAudioCaptureService : IDisposable, IAudioCaptureService
     private readonly Queue<double> mLufs = new();
 
     /// <summary>
+    ///     The last few sets of captured audio bytes, converted to LUFS
+    /// </summary>
+    private readonly Queue<double> mLufsLonger = new();
+
+    /// <summary>
     ///     The frequency to capture at
     /// </summary>
     private readonly int mCaptureFrequency = 44100;
@@ -159,18 +164,23 @@ public class BassAudioCaptureService : IDisposable, IAudioCaptureService
         // Calculate the LUFS
         var lufs = Scale.ToDecibel(signal.Rms() * 1.2);
         mLufs.Enqueue(lufs);
+        mLufsLonger.Enqueue(lufs);
 
-        // Keep list to 10 samples
-        if (mLufs.Count > 15)
+        // Limit queue sizes
+        if (mLufs.Count > 10)
             mLufs.Dequeue();
+        if (mLufsLonger.Count > 200)
+            mLufsLonger.Dequeue();
 
         // Calculate the average
         var averageLufs = mLufs.Average();
+        
+        var averageLongLufs = mLufsLonger.Average();
 
         // Fire off this chunk of information to listeners
         AudioChunkAvailable?.Invoke(new AudioChunkData
         (
-            ShortTermLUFS: averageLufs,
+            ShortTermLUFS: averageLongLufs,
             Loudness: averageLufs,
             LoudnessRange: averageLufs + averageLufs * 0.9,
             RealtimeDynamics: averageLufs + averageLufs * 0.8,

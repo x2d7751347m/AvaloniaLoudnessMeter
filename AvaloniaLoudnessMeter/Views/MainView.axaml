@@ -7,7 +7,9 @@
              xmlns:valueConverters="clr-namespace:AvaloniaLoudnessMeter.ValueConverters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
              x:Class="AvaloniaLoudnessMeter.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia">
+
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
 	         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -288,22 +290,83 @@
                 </StackPanel>
             </StackPanel>
 
-            <Border Grid.Column="2">
+            <!-- Graph -->
+            <Grid Grid.Column="2">
 
-                <Expander VerticalAlignment="Top" HorizontalAlignment="Left">
+                <lvc:CartesianChart
+                    Margin="0,15,0,0"
+                    Series="{Binding Series}"
+                    YAxes="{Binding YAxis}" />
 
-                    <Expander.Header>
-                        <Label Content="This is a long header text" />
-                    </Expander.Header>
+                <Grid Grid.Row="0"
+                      Margin="10,10"
+                      RowDefinitions="Auto, 3*,3*,3*,9*,5*,4*,9*,9*,9*,6*"
+                      ColumnDefinitions="Auto *">
+                    <Label Grid.Row="0" Content="0 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="1" Content="-3 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="2" Content="-6 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="3" Content="-9 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="4" Content="-18 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="5" Content="-23 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="6" Content="-27 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="7" Content="-36 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="8" Content="-45 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    <Label Grid.Row="9" Content="-54 —" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Right" />
 
-                    <StackPanel>
-                        <Label Content="Hello world" />
-                        <Label Content="Hello world" />
-                        <Label Content="Hello world" />
-                        <Label Content="Hello world" />
-                    </StackPanel>
-                </Expander>
-            </Border>
+                    <Rectangle Grid.Row="0" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="2" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="3" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="4" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="5" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="6" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="7" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="8" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+                    <Rectangle Grid.Row="9" Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5" />
+
+                    <!-- <Grid Grid.Row="1" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-3 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="2" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-6 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="3" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-9 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="4" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-18 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="5" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-23 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="6" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-27 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="7" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-36 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="8" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-45 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="9" ColumnDefinitions="Auto *"> -->
+                    <!--     <Label Content="-54 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+                    <!-- <Grid Grid.Row="10" ColumnDefinitions="Auto *" Opacity="0"> -->
+                    <!--     <Label Content="-60 —" Foreground="White" VerticalAlignment="Center"></Label> -->
+                    <!--     <Rectangle Grid.Column="1" Fill="White" VerticalAlignment="Center" HorizontalAlignment="Stretch" Opacity="0.1" Height="1.5"></Rectangle> -->
+                    <!-- </Grid> -->
+
+                </Grid>
+            </Grid>
         </Grid>
 
         <!-- Bottom bar -->

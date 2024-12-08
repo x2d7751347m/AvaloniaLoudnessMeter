@@ -22,8 +22,9 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia"/>
         <PackageReference Include="ManagedBass"/>
-        <PackageReference Include="NWaves" />
+        <PackageReference Include="NWaves"/>
     </ItemGroup>
 
     <ItemGroup>
